@@ -1,0 +1,214 @@
+﻿@using SchoolManagement.Application.DTOs.Drive
+@model UpdateDriveDto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "تعديل بيانات السائق";
+    Layout = "_Layout";
+}
+
+<style>
+    .edit-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #b68b40 0%, #9e7536 100%);
+        color: white;
+        padding: 25px 30px;
+    }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .card-header h2 i {
+                color: #0d6e6e;
+            }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .control-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #495057;
+        font-weight: 600;
+    }
+
+        .control-label i {
+            margin-left: 8px;
+            color: #b68b40;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #b68b40;
+            box-shadow: 0 0 0 3px rgba(182, 139, 64, 0.1);
+        }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-update {
+        background: #b68b40;
+        color: white;
+    }
+
+        .btn-update:hover {
+            background: #9e7536;
+            transform: translateY(-2px);
+        }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .info-note {
+        background: #f8f9fa;
+        border-right: 4px solid #b68b40;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .info-note i {
+            color: #b68b40;
+            font-size: 1.2rem;
+        }
+</style>
+
+<div class="edit-container">
+    <div class="form-card">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-edit"></i>
+                @ViewData["Title"]
+            </h2>
+        </div>
+
+        <div class="card-body">
+            <div class="info-note">
+                <i class="fas fa-info-circle"></i>
+                <span>الحقول بعلامة <span class="text-danger">*</span> إجبارية</span>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="DrvNm" class="control-label">
+                        <i class="fas fa-language"></i> الاسم (عربي) <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="DrvNm" class="form-control" />
+                    <span asp-validation-for="DrvNm" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DrvNmEn" class="control-label">
+                        <i class="fas fa-language"></i> Name (English) <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="DrvNmEn" class="form-control" />
+                    <span asp-validation-for="DrvNmEn" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Mobil" class="control-label">
+                        <i class="fas fa-phone-alt"></i> رقم الجوال
+                    </label>
+                    <input asp-for="Mobil" class="form-control" min="10" />
+                    <span asp-validation-for="Mobil" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LicEnd" class="control-label">
+                        <i class="fas fa-id-card"></i> تاريخ انتهاء الرخصة
+                    </label>
+                    <input asp-for="LicEnd" type="date" class="form-control" />
+                    <span asp-validation-for="LicEnd" class="text-danger"></span>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-update">
+                        <i class="fas fa-save"></i> تحديث
+                    </button>
+                    <a asp-action="Index" class="btn btn-cancel">
+                        <i class="fas fa-times"></i> إلغاء
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

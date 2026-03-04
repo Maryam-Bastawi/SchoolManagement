@@ -1,0 +1,199 @@
+﻿@using SchoolManagement.Application.DTOs.TransferType
+@model UpdateTransferTypeDto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "تعديل نوع التحويل";
+    Layout = "_Layout";
+}
+
+<style>
+    /* نفس الـ Style الخاص بصفحة Create */
+    .create-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #b68b40 0%, #9e7536 100%);
+        color: white;
+        padding: 25px 30px;
+    }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .card-header h2 i {
+                color: #0d6e6e;
+            }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .control-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #495057;
+        font-weight: 600;
+    }
+
+        .control-label i {
+            margin-left: 8px;
+            color: #b68b40;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #b68b40;
+            box-shadow: 0 0 0 3px rgba(182, 139, 64, 0.1);
+        }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-update {
+        background: #b68b40;
+        color: white;
+    }
+
+        .btn-update:hover {
+            background: #9e7536;
+            transform: translateY(-2px);
+        }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+</style>
+
+<div class="create-container">
+    <div class="form-card">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-edit"></i>
+                @ViewData["Title"]
+            </h2>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="Route" class="control-label">
+                        <i class="fas fa-language"></i> المسار (عربي) *
+                    </label>
+                    <input asp-for="Route" class="form-control" />
+                    <span asp-validation-for="Route" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="RouteEng" class="control-label">
+                        <i class="fas fa-language"></i> Route (English) *
+                    </label>
+                    <input asp-for="RouteEng" class="form-control" />
+                    <span asp-validation-for="RouteEng" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Exmount1" class="control-label">
+                                <i class="fas fa-money-bill-wave"></i> القيمة الأولى
+                            </label>
+                            <input asp-for="Exmount1" class="form-control" />
+                            <span asp-validation-for="Exmount1" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Exmount2" class="control-label">
+                                <i class="fas fa-money-bill-wave"></i> القيمة الثانية
+                            </label>
+                            <input asp-for="Exmount2" class="form-control" />
+                            <span asp-validation-for="Exmount2" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-update">
+                        <i class="fas fa-save"></i> تحديث
+                    </button>
+                    <a asp-action="Index" class="btn btn-cancel">
+                        <i class="fas fa-times"></i> إلغاء
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

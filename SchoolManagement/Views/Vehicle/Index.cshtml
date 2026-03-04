@@ -1,0 +1,1324 @@
+﻿@using SchoolManagement.Application.DTOs.Vehicle
+@model IEnumerable<GetVehicleDto>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "إدارة المركبات";
+    Layout = "_Layout";
+    var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<style>
+    /* Container */
+    #Filteration {
+        margin-bottom: 25px;
+    }
+
+    /* Searching Box */
+    .searching-box {
+        background: #ffffff;
+        border: 2px solid #0d6e6e;
+        border-radius: 15px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+    }
+
+        /* أيقونة البحث */
+        .searching-box i {
+            color: #0d6e6e;
+            font-size: 16px;
+        }
+
+        /* Input */
+        .searching-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+            /* Placeholder */
+            .searching-box input::placeholder {
+                color: #888;
+            }
+
+        /* Focus Effect */
+        .searching-box:focus-within {
+            border-color: #b68b40;
+            box-shadow: 0 0 0 4px rgba(182, 139, 64, 0.2);
+        }
+    .index-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    .header-card {
+        background: linear-gradient(135deg, #0d6e6e 0%, #0a5a5a 100%);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .header-title h1 i {
+            color: #b68b40;
+            font-size: 2.2rem;
+        }
+
+    .header-title p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .btn-create {
+        background: #b68b40;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 15px rgba(182, 139, 64, 0.3);
+    }
+
+        .btn-create:hover {
+            background: transparent;
+            border-color: #b68b40;
+            color: #b68b40;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(182, 139, 64, 0.4);
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border-color: #0d6e6e;
+        }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #0d6e6e20 0%, #0a5a5a20 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #0d6e6e;
+    }
+
+    .stat-content h3 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-content .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0d6e6e;
+        line-height: 1.2;
+    }
+
+    .stat-content small {
+        color: #b68b40;
+        font-size: 0.8rem;
+    }
+
+    /* تحسينات قسم الفلاتر */
+    .filter-section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+    }
+
+    .filter-tab {
+        padding: 8px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        color: #495057;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .filter-tab:hover {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .filter-tab.active {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .filter-group label i {
+                color: #0d6e6e;
+                width: 18px;
+            }
+
+    .filter-input {
+        padding: 10px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        font-family: 'Cairo', sans-serif;
+    }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #0d6e6e;
+            box-shadow: 0 0 0 3px rgba(13, 110, 110, 0.1);
+        }
+
+        .filter-input[type="date"] {
+            min-height: 45px;
+        }
+
+    .filter-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .badge-filter {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 50px;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .badge-filter:hover {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .badge-filter.active {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .badge-filter i {
+            font-size: 0.85rem;
+        }
+
+    .btn-filter {
+        background: #0d6e6e;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        height: 45px;
+    }
+
+        .btn-filter:hover {
+            background: #0a5a5a;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(13, 110, 110, 0.2);
+        }
+
+    .btn-reset {
+        background: #6c757d;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        height: 45px;
+        text-decoration: none;
+    }
+
+        .btn-reset:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.2);
+        }
+
+    .active-filters {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        border: 1px solid #e9ecef;
+    }
+
+        .active-filters span {
+            font-weight: 600;
+            color: #0d6e6e;
+        }
+
+    .filter-tag {
+        background: #0d6e6e;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .filter-tag i {
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+            .filter-tag i:hover {
+                color: #dc3545;
+            }
+
+    .results-count {
+        background: #e9ecef;
+        border-radius: 50px;
+        padding: 5px 15px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #0d6e6e;
+        margin-right: 10px;
+    }
+
+    /* باقي الاستايلات الموجودة */
+    .table-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1200px;
+    }
+
+    th {
+        background: #f8f9fa;
+        color: #0d6e6e;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 18px 15px;
+        text-align: center;
+        border-bottom: 2px solid #0d6e6e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+    }
+
+    tr:hover td {
+        background: #f8f9fa;
+    }
+
+    .stock-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .in-stock {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .out-of-stock {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .plate-number {
+        font-family: monospace;
+        font-weight: 600;
+        color: #0d6e6e;
+        background: #e9ecef;
+        padding: 3px 8px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .driver-name {
+        font-weight: 600;
+        color: #b68b40;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        color: white;
+    }
+
+    .btn-view {
+        background: #17a2b8;
+    }
+
+    .btn-edit {
+        background: #b68b40;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+    }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            filter: brightness(110%);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        border: 2px dashed #e9ecef;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #b68b40;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #0d6e6e;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border-right: 4px solid #155724;
+        color: #155724;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        border-right: 4px solid #721c24;
+        color: #721c24;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .header-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header-title h1 {
+            justify-content: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-row {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-tabs {
+            flex-wrap: wrap;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .active-filters {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="index-container">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="header-card">
+        <div class="header-title">
+            <h1>
+                <i class="fas fa-truck"></i>
+                @ViewData["Title"]
+            </h1>
+            <p>عرض وإدارة جميع المركبات في النظام</p>
+        </div>
+        <a asp-action="Create" class="btn-create">
+            <i class="fas fa-plus-circle"></i>
+            إضافة مركبة جديدة
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-truck"></i>
+            </div>
+            <div class="stat-content">
+                <h3>إجمالي المركبات</h3>
+                <div class="stat-number">@Model?.Count()</div>
+                <small>مركبة مسجلة</small>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>متوفر</h3>
+                <div class="stat-number">@Model?.Count(x => x.InStock)</div>
+                <small>مركبة متوفرة</small>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>غير متوفر</h3>
+                <div class="stat-number">@Model?.Count(x => !x.InStock)</div>
+                <small>مركبة غير متوفرة</small>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="stat-content">
+                <h3>بسائق</h3>
+                <div class="stat-number">@Model?.Count(x => x.DriveId.HasValue)</div>
+                <small>مركبة بسائق</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- قسم الفلاتر المتقدمة -->
+    <div class="filter-section">
+        <div class="filter-tabs">
+            <span class="filter-tab active" onclick="showFilter('simple')">
+                <i class="fas fa-search"></i> بحث بسيط
+            </span>
+            <span class="filter-ta" onclick="showFilter('advanced')">
+                <i class="fas fa-sliders-h"></i> فلترة متقدمة
+            </span>
+        </div>
+
+        <!-- البحث البسيط -->
+        <div id="Filteration">
+            <div class="searching-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput"
+                       placeholder="بحث بالاسم (عربي/إنجليزي) أو رقم اللوحة أو اللون..." />
+            </div>
+        </div>
+
+        <!-- الفلترة المتقدمة -->
+        <div id="advancedFilter" style="display: none;">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label><i class="fas fa-tag"></i> الحالة</label>
+                    <select id="stockStatus" class="filter-input">
+                        <option value="all">الكل</option>
+                        <option value="in-stock">متوفر</option>
+                        <option value="out-of-stock">غير متوفر</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-user"></i> السائق</label>
+                    <select id="driverStatus" class="filter-input">
+                        <option value="all">الكل</option>
+                        <option value="with-driver">بسائق</option>
+                        <option value="without-driver">بدون سائق</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-id-card"></i> حالة الرخصة</label>
+                    <select id="licenseStatus" class="filter-input">
+                        <option value="all">الكل</option>
+                        <option value="valid">سارية</option>
+                        <option value="expired">منتهية</option>
+                        <option value="expiring-soon">سينتهي خلال 30 يوم</option>
+                        <option value="not-specified">غير محدد</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> تاريخ انتهاء الرخصة من</label>
+                    <input type="date" id="licenseDateFrom" class="filter-input" />
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> إلى</label>
+                    <input type="date" id="licenseDateTo" class="filter-input" />
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-palette"></i> اللون</label>
+                    <input type="text" id="colorFilter" class="filter-input" placeholder="أدخل اللون..." />
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar"></i> الموديل من</label>
+                    <input type="text" id="modelFrom" class="filter-input" placeholder="مثال: 2015" />
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar"></i> إلى</label>
+                    <input type="text" id="modelTo" class="filter-input" placeholder="مثال: 2023" />
+                </div>
+
+                <div class="filter-group" style="justify-content: flex-end; flex-direction: row; gap: 10px;">
+                    <button class="btn-filter" onclick="applyAdvancedFilter()">
+                        <i class="fas fa-filter"></i> تطبيق الفلتر
+                    </button>
+                    <button class="btn-reset" onclick="resetFilters()">
+                        <i class="fas fa-redo-alt"></i> إعادة تعيين
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-badges">
+                <span class="badge-filter" onclick="quickFilter('all')">
+                    <i class="fas fa-list"></i> الكل
+                </span>
+                <span class="badge-filter" onclick="quickFilter('in-stock')">
+                    <i class="fas fa-check-circle" style="color: #28a745;"></i> متوفر
+                </span>
+                <span class="badge-filter" onclick="quickFilter('out-of-stock')">
+                    <i class="fas fa-times-circle" style="color: #dc3545;"></i> غير متوفر
+                </span>
+                <span class="badge-filter" onclick="quickFilter('with-driver')">
+                    <i class="fas fa-user" style="color: #b68b40;"></i> بسائق
+                </span>
+                <span class="badge-filter" onclick="quickFilter('without-driver')">
+                    <i class="fas fa-user-slash" style="color: #6c757d;"></i> بدون سائق
+                </span>
+               
+            </div>
+        </div>
+
+      
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-card">
+            <div class="table-responsive">
+                <table id="vehiclesTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم (عربي)</th>
+                            <th>الاسم (إنجليزي)</th>
+                            <th>رقم اللوحة</th>
+                            <th>اللون</th>
+                            <th>الموديل</th>
+                            <th>الحالة</th>
+                            <th>السائق</th>
+                            <th>حالة الرخصة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Select((value, i) => new { i = i + 1, value }))
+                        {
+                            var licEndDate = DateTime.TryParse(item.value.LicEndDate, out DateTime licDate) ? licDate : (DateTime?)null;
+                            var today = DateTime.Today;
+                            var daysUntilExpiry = licEndDate.HasValue ? (licEndDate.Value - today).Days : (int?)null;
+                            var licenseStatus = !licEndDate.HasValue ? "not-specified" : 
+                                                (licEndDate < today ? "expired" : 
+                                                (daysUntilExpiry <= 30 ? "expiring-soon" : "valid"));
+
+                            <tr id="row-@item.value.Id"
+                                data-stock="@(item.value.InStock ? "in-stock" : "out-of-stock")"
+                                data-driver="@(item.value.DriveId.HasValue ? "with-driver" : "without-driver")"
+                                data-license="@licenseStatus"
+                                data-license-date="@(licEndDate?.ToString("yyyy-MM-dd") ?? "")"
+                                data-color="@(item.value.Color?.ToLower() ?? "")"
+                                data-model="@(item.value.Model ?? "")">
+                                <td>@item.i</td>
+                                <td>@item.value.CarName</td>
+                                <td>@item.value.CarNameEn</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.value.PlateNum))
+                                    {
+                                        <span class="plate-number">@item.value.PlateNum</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>@(item.value.Color ?? "-")</td>
+                                <td>@(item.value.Model ?? "-")</td>
+                                <td>
+                                    @if (item.value.InStock)
+                                    {
+                                        <span class="stock-badge in-stock">
+                                            <i class="fas fa-check-circle"></i> متوفر
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="stock-badge out-of-stock">
+                                            <i class="fas fa-times-circle"></i> غير متوفر
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.value.DriveId.HasValue)
+                                    {
+                                        <span class="driver-name">
+                                            <i class="fas fa-user"></i> @item.value.DriveName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">بدون سائق</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (licEndDate.HasValue)
+                                    {
+                                        if (licEndDate < today)
+                                        {
+                                            <span class="badge-filter" style="background: #f8d7da; color: #721c24; border: none;">
+                                                <i class="fas fa-exclamation-circle"></i> منتهية
+                                            </span>
+                                        }
+                                        else if (daysUntilExpiry <= 30)
+                                        {
+                                            <span class="badge-filter" style="background: #fff3cd; color: #856404; border: none;">
+                                                <i class="fas fa-exclamation-triangle"></i> @daysUntilExpiry يوم
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-filter" style="background: #d4edda; color: #155724; border: none;">
+                                                <i class="fas fa-check-circle"></i> سارية
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-action="Details" asp-route-id="@item.value.Id" class="btn-action btn-view" title="عرض التفاصيل">
+                                            <i class="fas fa-eye"></i> عرض
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.value.Id" class="btn-action btn-edit" title="تعديل">
+                                            <i class="fas fa-edit"></i> تعديل
+                                        </a>
+                                        <button onclick="confirmDelete(@item.value.Id, '@item.value.CarName', this)" class="btn-action btn-delete" title="حذف">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-truck"></i>
+            <h3>لا توجد مركبات</h3>
+            <p>لم يتم إضافة أي مركبات بعد. يمكنك إضافة أول مركبة الآن!</p>
+            <a asp-action="Create" class="btn-create" style="display: inline-flex;">
+                <i class="fas fa-plus-circle"></i>
+                إضافة مركبة جديدة
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const antiForgeryToken = '@requestToken';
+        let activeFilters = {};
+
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // البحث البسيط
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                filterTableBySearch(value);
+            });
+
+            // تهيئة الفلاتر
+            showFilter('simple');
+        });
+
+        // إظهار/إخفاء أنواع الفلترة
+        function showFilter(type) {
+            $('.filter-tab').removeClass('active');
+            if (type === 'simple') {
+                $('.filter-tab:first').addClass('active');
+                $('#simpleFilter').show();
+                $('#advancedFilter').hide();
+            } else {
+                $('.filter-tab:last').addClass('active');
+                $('#simpleFilter').hide();
+                $('#advancedFilter').show();
+            }
+        }
+
+        // فلترة الجدول بالبحث البسيط
+        function filterTableBySearch(searchText) {
+            $("#vehiclesTable tbody tr").each(function() {
+                var rowText = $(this).text().toLowerCase();
+                $(this).toggle(rowText.indexOf(searchText) > -1);
+            });
+            updateResultsCount();
+        }
+
+        // تطبيق الفلتر المتقدم
+        function applyAdvancedFilter() {
+            const stockStatus = $('#stockStatus').val();
+            const driverStatus = $('#driverStatus').val();
+            const licenseStatus = $('#licenseStatus').val();
+            const licenseDateFrom = $('#licenseDateFrom').val();
+            const licenseDateTo = $('#licenseDateTo').val();
+            const colorFilter = $('#colorFilter').val().toLowerCase();
+            const modelFrom = $('#modelFrom').val();
+            const modelTo = $('#modelTo').val();
+
+            // تحديث الفلاتر النشطة
+            updateActiveFilters({
+                stockStatus, driverStatus, licenseStatus, 
+                licenseDateFrom, licenseDateTo, colorFilter,
+                modelFrom, modelTo
+            });
+
+            $("#vehiclesTable tbody tr").each(function() {
+                const row = $(this);
+                let showRow = true;
+
+                // فلترة حسب حالة التوفر
+                if (stockStatus !== 'all') {
+                    const rowStock = row.data('stock');
+                    showRow = showRow && (rowStock === stockStatus);
+                }
+
+                // فلترة حسب السائق
+                if (driverStatus !== 'all') {
+                    const rowDriver = row.data('driver');
+                    showRow = showRow && (rowDriver === driverStatus);
+                }
+
+                // فلترة حسب حالة الرخصة
+                if (licenseStatus !== 'all') {
+                    const rowLicense = row.data('license');
+                    showRow = showRow && (rowLicense === licenseStatus);
+                }
+
+                // فلترة حسب تاريخ الرخصة
+                const licenseDate = row.data('license-date');
+                if (licenseDateFrom && licenseDate) {
+                    showRow = showRow && (licenseDate >= licenseDateFrom);
+                }
+                if (licenseDateTo && licenseDate) {
+                    showRow = showRow && (licenseDate <= licenseDateTo);
+                }
+
+                // فلترة حسب اللون
+                if (colorFilter) {
+                    const rowColor = row.data('color');
+                    showRow = showRow && rowColor.includes(colorFilter);
+                }
+
+                // فلترة حسب الموديل
+                const model = row.data('model');
+                if (modelFrom && model) {
+                    const modelNum = parseInt(model);
+                    showRow = showRow && (modelNum >= parseInt(modelFrom));
+                }
+                if (modelTo && model) {
+                    const modelNum = parseInt(model);
+                    showRow = showRow && (modelNum <= parseInt(modelTo));
+                }
+
+                row.toggle(showRow);
+            });
+
+            updateResultsCount();
+        }
+
+        // تحديث عرض الفلاتر النشطة
+        function updateActiveFilters(filters) {
+            activeFilters = filters;
+            const activeFiltersDiv = $('#activeFilters');
+            const activeFiltersList = $('#activeFiltersList');
+            activeFiltersList.empty();
+
+            let hasFilters = false;
+
+            if (filters.stockStatus && filters.stockStatus !== 'all') {
+                hasFilters = true;
+                const text = filters.stockStatus === 'in-stock' ? 'متوفر' : 'غير متوفر';
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        الحالة: ${text} <i class="fas fa-times" onclick="removeFilter('stockStatus')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.driverStatus && filters.driverStatus !== 'all') {
+                hasFilters = true;
+                const text = filters.driverStatus === 'with-driver' ? 'بسائق' : 'بدون سائق';
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        السائق: ${text} <i class="fas fa-times" onclick="removeFilter('driverStatus')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.licenseStatus && filters.licenseStatus !== 'all') {
+                hasFilters = true;
+                let text = '';
+                switch(filters.licenseStatus) {
+                    case 'valid': text = 'سارية'; break;
+                    case 'expired': text = 'منتهية'; break;
+                    case 'expiring-soon': text = 'سينتهي قريباً'; break;
+                    case 'not-specified': text = 'غير محدد'; break;
+                }
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        الرخصة: ${text} <i class="fas fa-times" onclick="removeFilter('licenseStatus')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.licenseDateFrom) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        من تاريخ: ${filters.licenseDateFrom} <i class="fas fa-times" onclick="removeFilter('licenseDateFrom')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.licenseDateTo) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        إلى تاريخ: ${filters.licenseDateTo} <i class="fas fa-times" onclick="removeFilter('licenseDateTo')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.colorFilter) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        اللون: ${filters.colorFilter} <i class="fas fa-times" onclick="removeFilter('colorFilter')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.modelFrom) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        موديل من: ${filters.modelFrom} <i class="fas fa-times" onclick="removeFilter('modelFrom')"></i>
+                    </span>
+                `);
+            }
+
+            if (filters.modelTo) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="filter-tag">
+                        موديل إلى: ${filters.modelTo} <i class="fas fa-times" onclick="removeFilter('modelTo')"></i>
+                    </span>
+                `);
+            }
+
+            if (hasFilters) {
+                activeFiltersDiv.show();
+            } else {
+                activeFiltersDiv.hide();
+            }
+        }
+
+        // إزالة فلتر معين
+        function removeFilter(filterName) {
+            $('#' + filterName).val('all');
+            activeFilters[filterName] = 'all';
+            applyAdvancedFilter();
+        }
+
+        // فلترة سريعة
+        function quickFilter(type) {
+            $('#advancedFilter').show();
+            $('#simpleFilter').hide();
+            $('.filter-tab').removeClass('active');
+            $('.filter-tab:last').addClass('active');
+
+            switch(type) {
+                case 'all':
+                    resetFilters();
+                    break;
+                case 'in-stock':
+                    $('#stockStatus').val('in-stock');
+                    break;
+                case 'out-of-stock':
+                    $('#stockStatus').val('out-of-stock');
+                    break;
+                case 'with-driver':
+                    $('#driverStatus').val('with-driver');
+                    break;
+                case 'without-driver':
+                    $('#driverStatus').val('without-driver');
+                    break;
+                case 'license-valid':
+                    $('#licenseStatus').val('valid');
+                    break;
+                case 'license-expired':
+                    $('#licenseStatus').val('expired');
+                    break;
+            }
+            applyAdvancedFilter();
+        }
+
+        // إعادة تعيين جميع الفلاتر
+        function resetFilters() {
+            $('#stockStatus').val('all');
+            $('#driverStatus').val('all');
+            $('#licenseStatus').val('all');
+            $('#licenseDateFrom').val('');
+            $('#licenseDateTo').val('');
+            $('#colorFilter').val('');
+            $('#modelFrom').val('');
+            $('#modelTo').val('');
+            $('#searchInput').val('');
+            
+            activeFilters = {};
+            $('#activeFilters').hide();
+            
+            $("#vehiclesTable tbody tr").show();
+            updateResultsCount();
+        }
+
+        // تحديث عرض عدد النتائج
+        function updateResultsCount() {
+            const visibleRows = $('#vehiclesTable tbody tr:visible').length;
+            const totalRows = $('#vehiclesTable tbody tr').length;
+            
+            if ($('#filterResults').length) {
+                $('#filterResults').remove();
+            }
+            
+            if (visibleRows !== totalRows) {
+                $('.table-card').before(`
+                    <div id="filterResults" class="alert alert-info" style="margin-bottom: 15px; background: #cff4fc; border-right-color: #0dcaf0; color: #055160;">
+                        <i class="fas fa-info-circle"></i>
+                        عرض ${visibleRows} من أصل ${totalRows} مركبة
+                    </div>
+                `);
+            }
+        }
+
+        function confirmDelete(id, name, buttonElement) {
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                text: `هل أنت متأكد من حذف المركبة "${name}"؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const originalText = buttonElement.innerHTML;
+                    buttonElement.innerHTML = '<span class="loading-spinner"></span> جاري الحذف...';
+                    buttonElement.disabled = true;
+
+                    $.ajax({
+                        url: '/Vehicle/DeleteConfirmed/' + id,
+                        type: 'POST',
+                        headers: {
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $(`#row-${id}`).fadeOut(500, function() {
+                                    $(this).remove();
+                                    if ($('#vehiclesTable tbody tr').length === 0) {
+                                        location.reload();
+                                    } else {
+                                        updateResultsCount();
+                                    }
+                                });
+
+                                Swal.fire({
+                                    title: 'تم الحذف!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'خطأ!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'حسناً'
+                                });
+                                buttonElement.innerHTML = originalText;
+                                buttonElement.disabled = false;
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                title: 'خطأ!',
+                                text: 'حدث خطأ في الاتصال بالخادم',
+                                icon: 'error',
+                                confirmButtonText: 'حسناً'
+                            });
+                            buttonElement.innerHTML = originalText;
+                            buttonElement.disabled = false;
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

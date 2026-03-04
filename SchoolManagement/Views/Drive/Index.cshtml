@@ -1,0 +1,1091 @@
+﻿@using SchoolManagement.Application.DTOs.Drive
+@model IEnumerable<GetDriveDto>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "إدارة السائقين";
+    Layout = "_Layout";
+    var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<style>
+    /* Index Page Styles - موحد مع باقي الصفحات */
+    .index-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 30px 0;
+    padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    /* إضافة استايلات جديدة للفلترة المتقدمة */
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+    }
+
+    .filter-tab {
+        padding: 8px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        color: #495057;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+    }
+
+        .filter-tab:hover {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .filter-tab.active {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+            .filter-group label i {
+                color: #0d6e6e;
+                margin-left: 5px;
+            }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #0d6e6e;
+            box-shadow: 0 0 0 3px rgba(13, 110, 110, 0.1);
+        }
+
+        .filter-input[type="date"] {
+            font-family: 'Cairo', sans-serif;
+        }
+
+    .btn-filter {
+        background: #0d6e6e;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+        .btn-filter:hover {
+            background: #0a5a5a;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(13, 110, 110, 0.2);
+        }
+
+    .btn-reset {
+        background: #6c757d;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        text-decoration: none;
+    }
+
+        .btn-reset:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.2);
+            color: white;
+        }
+
+    .filter-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .badge-filter {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 50px;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .badge-filter:hover {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .badge-filter.active {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .badge-filter i {
+            font-size: 0.8rem;
+        }
+
+    .active-filters {
+        background: #e9ecef;
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .active-filter-tag {
+        background: #0d6e6e;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .active-filter-tag i {
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+            .active-filter-tag i:hover {
+                color: #dc3545;
+            }
+
+   
+
+    .header-card {
+        background: linear-gradient(135deg, #0d6e6e 0%, #0a5a5a 100%);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .header-title h1 i {
+            color: #b68b40;
+            font-size: 2.2rem;
+        }
+
+    .header-title p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .btn-create {
+        background: #b68b40;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 15px rgba(182, 139, 64, 0.3);
+    }
+
+        .btn-create:hover {
+            background: transparent;
+            border-color: #b68b40;
+            color: #b68b40;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(182, 139, 64, 0.4);
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border-color: #0d6e6e;
+        }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #0d6e6e20 0%, #0a5a5a20 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #0d6e6e;
+    }
+
+    .stat-content h3 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-content .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0d6e6e;
+        line-height: 1.2;
+    }
+
+    .stat-content small {
+        color: #b68b40;
+        font-size: 0.8rem;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    th {
+        background: #f8f9fa;
+        color: #0d6e6e;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 18px 15px;
+        text-align: center;
+        border-bottom: 2px solid #0d6e6e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+    }
+
+    tr:hover td {
+        background: #f8f9fa;
+    }
+
+    .mobile-number {
+        direction: ltr;
+        display: inline-block;
+        font-family: monospace;
+        font-size: 1rem;
+        background: #e9ecef;
+        padding: 3px 8px;
+        border-radius: 5px;
+    }
+
+    .license-date {
+        font-weight: 600;
+        color: #0d6e6e;
+        background: #e9ecef;
+        padding: 3px 8px;
+        border-radius: 5px;
+    }
+
+    .expired-license {
+        color: #dc3545;
+        font-weight: 600;
+        background: #f8d7da;
+        padding: 3px 8px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .valid-license {
+        color: #28a745;
+        font-weight: 600;
+        background: #d4edda;
+        padding: 3px 8px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        color: white;
+    }
+
+    .btn-view {
+        background: #17a2b8;
+    }
+
+    .btn-edit {
+        background: #b68b40;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        filter: brightness(110%);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        border: 2px dashed #e9ecef;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #b68b40;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #0d6e6e;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border-right: 4px solid #155724;
+        color: #155724;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        border-right: 4px solid #721c24;
+        color: #721c24;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .header-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header-title h1 {
+            justify-content: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .filter-row {
+            flex-direction: column;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .filter-tabs {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<div class="index-container">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="header-card">
+        <div class="header-title">
+            <h1>
+                <i class="fas fa-users"></i>
+                @ViewData["Title"]
+            </h1>
+            <p>عرض وإدارة بيانات السائقين في النظام</p>
+        </div>
+        <a asp-action="Create" class="btn-create">
+            <i class="fas fa-plus-circle"></i>
+            إضافة سائق جديد
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>إجمالي السائقين</h3>
+                <div class="stat-number">@Model?.Count()</div>
+                <small>سائق مسجل</small>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <div class="stat-content">
+                <h3>برخصة سارية</h3>
+                <div class="stat-number" id="validLicenseCount">
+                    @{
+                        var today = DateTime.Today;
+                        var validCount = Model?.Count(x =>
+                        !string.IsNullOrEmpty(x.LicEnd) &&
+                        DateTime.TryParse(x.LicEnd, out DateTime licDate) &&
+                        licDate >= today) ?? 0;
+                    }
+                    @validCount
+                </div>
+                <small>رخصة سارية</small>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <div class="stat-content">
+                <h3>برخصة منتهية</h3>
+                <div class="stat-number" id="expiredLicenseCount">
+                    @{
+                        var expiredCount = Model?.Count(x =>
+                        !string.IsNullOrEmpty(x.LicEnd) &&
+                        DateTime.TryParse(x.LicEnd, out DateTime licDate) &&
+                        licDate < today) ?? 0;
+                    }
+                    @expiredCount
+                </div>
+                <small>رخصة منتهية</small>
+            </div>
+        </div>
+
+      
+    </div>
+
+    <!-- قسم الفلترة المتقدمة -->
+    <div class="filter-section">
+        <div class="filter-tabs">
+            <span class="filter-tab" onclick="showSimpleFilter()">بحث بسيط</span>
+            <span class="filter-tab active" onclick="showAdvancedFilter()">فلترة متقدمة</span>
+        </div>
+
+        <!-- البحث البسيط -->
+        <div id="simpleFilter" style="display: none;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="بحث بالاسم (عربي/إنجليزي) أو رقم الجوال..." />
+            </div>
+        </div>
+
+        <!-- الفلترة المتقدمة -->
+        <div id="advancedFilter">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> من تاريخ</label>
+                    <input type="date" id="dateFrom" class="filter-input" />
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> إلى تاريخ</label>
+                    <input type="date" id="dateTo" class="filter-input" />
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-id-card"></i> حالة الرخصة</label>
+                    <select id="licenseStatus" class="filter-input">
+                        <option value="all">الكل</option>
+                        <option value="valid">سارية</option>
+                        <option value="expired">منتهية</option>
+                        <option value="not-specified">غير محدد</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="btn-filter" onclick="applyAdvancedFilter()">
+                        <i class="fas fa-filter"></i> تطبيق الفلتر
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <button class="btn-reset" onclick="resetFilters()">
+                        <i class="fas fa-redo"></i> إعادة تعيين
+                    </button>
+                </div>
+            </div>
+
+            <!-- فلتر سريع بال badges -->
+            <div class="filter-badges">
+                <span class="badge-filter" onclick="quickFilter('all')">
+                    <i class="fas fa-list"></i> الكل
+                </span>
+                <span class="badge-filter" onclick="quickFilter('valid')">
+                    <i class="fas fa-check-circle" style="color: #28a745;"></i> سارية
+                </span>
+                <span class="badge-filter" onclick="quickFilter('expired')">
+                    <i class="fas fa-exclamation-circle" style="color: #dc3545;"></i> منتهية
+                </span>
+                <span class="badge-filter" onclick="quickFilter('not-specified')">
+                    <i class="fas fa-question-circle" style="color: #6c757d;"></i> غير محدد
+                </span>
+            </div>
+        </div>
+
+        <!-- عرض الفلاتر النشطة -->
+        <div id="activeFilters" class="active-filters" style="display: none;">
+            <i class="fas fa-filter" style="color: #0d6e6e;"></i>
+            <span>الفلاتر النشطة:</span>
+            <div id="activeFiltersList"></div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-card">
+            <div class="table-responsive">
+                <table id="drivesTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم (عربي)</th>
+                            <th>الاسم (إنجليزي)</th>
+                            <th>رقم الجوال</th>
+                            <th>انتهاء الرخصة</th>
+                            <th>حالة الرخصة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Select((value, i) => new { i = i + 1, value }))
+                        {
+                            var licEndDate = DateTime.TryParse(item.value.LicEnd, out DateTime licDate) ? licDate : (DateTime?)null;
+                            var isExpired = licEndDate.HasValue && licEndDate.Value < DateTime.Today;
+                            var licenseStatus = !licEndDate.HasValue ? "not-specified" : (isExpired ? "expired" : "valid");
+
+                            <tr id="row-@item.value.Id"
+                                data-license-status="@licenseStatus"
+                                data-license-date="@(licEndDate?.ToString("yyyy-MM-dd") ?? "")">
+                                <td>@item.i</td>
+                                <td>@item.value.DrvNm</td>
+                                <td>@item.value.DrvNmEn</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.value.Mobil))
+                                    {
+                                        <span class="mobile-number">@item.value.Mobil</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (licEndDate.HasValue)
+                                    {
+                                        <span class="license-date">@licEndDate.Value.ToString("yyyy/MM/dd")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (licEndDate.HasValue)
+                                    {
+                                        if (isExpired)
+                                        {
+                                            <span class="expired-license">
+                                                <i class="fas fa-exclamation-circle"></i> منتهية
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="valid-license">
+                                                <i class="fas fa-check-circle"></i> سارية
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">غير محدد</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-action="Details" asp-route-id="@item.value.Id" class="btn-action btn-view" title="عرض التفاصيل">
+                                            <i class="fas fa-eye"></i> عرض
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.value.Id" class="btn-action btn-edit" title="تعديل">
+                                            <i class="fas fa-edit"></i> تعديل
+                                        </a>
+                                        <button onclick="confirmDelete(@item.value.Id, '@item.value.DrvNm', this)" class="btn-action btn-delete" title="حذف">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <h3>لا توجد سائقين</h3>
+            <p>لم يتم إضافة أي سائقين بعد. يمكنك إضافة أول سائق الآن!</p>
+            <a asp-action="Create" class="btn-create" style="display: inline-flex;">
+                <i class="fas fa-plus-circle"></i>
+                إضافة سائق جديد
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const antiForgeryToken = '@requestToken';
+
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // تفعيل البحث البسيط
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                filterTable(value);
+            });
+
+            // تهيئة الفلاتر
+            showAdvancedFilter();
+        });
+
+        // فلترة الجدول بناءً على النص
+        function filterTable(searchText) {
+            $("#drivesTable tbody tr").each(function() {
+                var rowText = $(this).text().toLowerCase();
+                $(this).toggle(rowText.indexOf(searchText) > -1);
+            });
+        }
+
+        // إظهار البحث البسيط
+        function showSimpleFilter() {
+            $('.filter-tab').removeClass('active');
+            $('.filter-tab:first').addClass('active');
+            $('#advancedFilter').hide();
+            $('#simpleFilter').show();
+            resetFilters();
+        }
+
+        // إظهار الفلترة المتقدمة
+        function showAdvancedFilter() {
+            $('.filter-tab').removeClass('active');
+            $('.filter-tab:last').addClass('active');
+            $('#simpleFilter').hide();
+            $('#advancedFilter').show();
+        }
+
+        // تطبيق الفلتر المتقدم
+        function applyAdvancedFilter() {
+            const dateFrom = $('#dateFrom').val();
+            const dateTo = $('#dateTo').val();
+            const licenseStatus = $('#licenseStatus').val();
+
+            // تحديث عرض الفلاتر النشطة
+            updateActiveFilters(dateFrom, dateTo, licenseStatus);
+
+            $("#drivesTable tbody tr").each(function() {
+                const row = $(this);
+                const licenseDate = row.data('license-date');
+                const rowLicenseStatus = row.data('license-status');
+                let showRow = true;
+
+                // فلترة حسب حالة الرخصة
+                if (licenseStatus !== 'all') {
+                    if (licenseStatus === 'not-specified') {
+                        showRow = showRow && (rowLicenseStatus === 'not-specified');
+                    } else {
+                        showRow = showRow && (rowLicenseStatus === licenseStatus);
+                    }
+                }
+
+                // فلترة حسب التاريخ
+                if (dateFrom && licenseDate) {
+                    showRow = showRow && (licenseDate >= dateFrom);
+                }
+                if (dateTo && licenseDate) {
+                    showRow = showRow && (licenseDate <= dateTo);
+                }
+
+                row.toggle(showRow);
+            });
+
+            // تحديث إحصائيات الفلتر
+            updateFilteredStats();
+        }
+
+        // تحديث عرض الفلاتر النشطة
+        function updateActiveFilters(dateFrom, dateTo, licenseStatus) {
+            const activeFiltersDiv = $('#activeFilters');
+            const activeFiltersList = $('#activeFiltersList');
+            activeFiltersList.empty();
+
+            let hasFilters = false;
+
+            if (dateFrom) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="active-filter-tag">
+                        من: ${dateFrom} <i class="fas fa-times" onclick="removeFilter('dateFrom')"></i>
+                    </span>
+                `);
+            }
+
+            if (dateTo) {
+                hasFilters = true;
+                activeFiltersList.append(`
+                    <span class="active-filter-tag">
+                        إلى: ${dateTo} <i class="fas fa-times" onclick="removeFilter('dateTo')"></i>
+                    </span>
+                `);
+            }
+
+            if (licenseStatus && licenseStatus !== 'all') {
+                hasFilters = true;
+                let statusText = licenseStatus === 'valid' ? 'سارية' :
+                               licenseStatus === 'expired' ? 'منتهية' : 'غير محدد';
+                activeFiltersList.append(`
+                    <span class="active-filter-tag">
+                        الحالة: ${statusText} <i class="fas fa-times" onclick="removeFilter('licenseStatus')"></i>
+                    </span>
+                `);
+            }
+
+            if (hasFilters) {
+                activeFiltersDiv.show();
+            } else {
+                activeFiltersDiv.hide();
+            }
+        }
+
+        // إزالة فلتر معين
+        function removeFilter(filterType) {
+            if (filterType === 'dateFrom') {
+                $('#dateFrom').val('');
+            } else if (filterType === 'dateTo') {
+                $('#dateTo').val('');
+            } else if (filterType === 'licenseStatus') {
+                $('#licenseStatus').val('all');
+            }
+            applyAdvancedFilter();
+        }
+
+        // فلترة سريعة باستخدام badges
+        function quickFilter(status) {
+            $('#licenseStatus').val(status);
+            applyAdvancedFilter();
+        }
+
+        // إعادة تعيين جميع الفلاتر
+        function resetFilters() {
+            $('#dateFrom').val('');
+            $('#dateTo').val('');
+            $('#licenseStatus').val('all');
+            $('#searchInput').val('');
+            $('#activeFilters').hide();
+            $("#drivesTable tbody tr").show();
+            updateFilteredStats();
+        }
+
+        // تحديث الإحصائيات بعد الفلتر
+        function updateFilteredStats() {
+            const visibleRows = $('#drivesTable tbody tr:visible').length;
+            const totalRows = $('#drivesTable tbody tr').length;
+
+            // يمكنك إضافة عداد لعرض عدد النتائج
+            if (visibleRows !== totalRows) {
+                // إظهار رسالة بعدد النتائج
+                if (!$('#filterResults').length) {
+                    $('.table-card').before(`
+                        <div id="filterResults" class="alert alert-info" style="margin-bottom: 15px;">
+                            <i class="fas fa-info-circle"></i>
+                            عرض ${visibleRows} من أصل ${totalRows} سائق
+                        </div>
+                    `);
+                } else {
+                    $('#filterResults').html(`
+                        <i class="fas fa-info-circle"></i>
+                        عرض ${visibleRows} من أصل ${totalRows} سائق
+                    `);
+                }
+            } else {
+                $('#filterResults').remove();
+            }
+        }
+
+        function confirmDelete(id, name, buttonElement) {
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                text: `هل أنت متأكد من حذف السائق "${name}"؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const originalText = buttonElement.innerHTML;
+                    buttonElement.innerHTML = '<span class="loading-spinner"></span> جاري الحذف...';
+                    buttonElement.disabled = true;
+
+                    $.ajax({
+                        url: '/Drive/DeleteConfirmed/' + id,
+                        type: 'POST',
+                        headers: {
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $(`#row-${id}`).fadeOut(500, function() {
+                                    $(this).remove();
+                                    if ($('#drivesTable tbody tr').length === 0) {
+                                        location.reload();
+                                    } else {
+                                        updateStatsAfterDelete();
+                                        updateFilteredStats();
+                                    }
+                                });
+
+                                Swal.fire({
+                                    title: 'تم الحذف!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'خطأ!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'حسناً'
+                                });
+                                buttonElement.innerHTML = originalText;
+                                buttonElement.disabled = false;
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                title: 'خطأ!',
+                                text: 'حدث خطأ في الاتصال بالخادم',
+                                icon: 'error',
+                                confirmButtonText: 'حسناً'
+                            });
+                            buttonElement.innerHTML = originalText;
+                            buttonElement.disabled = false;
+                        }
+                    });
+                }
+            });
+        }
+
+        function updateStatsAfterDelete() {
+            const totalElement = $('.stat-card:first .stat-number');
+            const currentTotal = parseInt(totalElement.text());
+            if (!isNaN(currentTotal)) {
+                totalElement.text(currentTotal - 1);
+            }
+        }
+    </script>
+}

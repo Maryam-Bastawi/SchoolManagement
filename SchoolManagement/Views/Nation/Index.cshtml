@@ -1,0 +1,357 @@
+﻿@using SchoolManagement.Application.DTOs.Nation
+@model List<GetNationDto>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "إدارة الجنسيات";
+    Layout = "_Layout";
+}
+
+<style>
+    .index-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    .header-card {
+        background: linear-gradient(135deg, #0d6e6e 0%, #0a5a5a 100%);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .header-title h1 i {
+            color: #b68b40;
+            font-size: 2.2rem;
+        }
+
+    .btn-create {
+        background: #b68b40;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-create:hover {
+            background: transparent;
+            border: 2px solid #b68b40;
+            color: #b68b40;
+            transform: translateY(-2px);
+        }
+
+    .search-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border: 1px solid #e9ecef;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #0d6e6e;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+            .search-box input:focus {
+                outline: none;
+                border-color: #0d6e6e;
+                box-shadow: 0 0 0 3px rgba(13, 110, 110, 0.1);
+            }
+
+    .table-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f8f9fa;
+        color: #0d6e6e;
+        font-weight: 700;
+        padding: 18px 15px;
+        text-align: center;
+        border-bottom: 2px solid #0d6e6e;
+    }
+
+    td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    tr:hover td {
+        background: #f8f9fa;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-view {
+        background: #17a2b8;
+    }
+
+    .btn-edit {
+        background: #b68b40;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        filter: brightness(110%);
+    }
+
+    .flag-icon {
+        width: 24px;
+        height: 16px;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        border: 2px dashed #e9ecef;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #b68b40;
+            opacity: 0.5;
+        }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border-right: 4px solid #155724;
+        color: #155724;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        border-right: 4px solid #721c24;
+        color: #721c24;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="index-container">
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Header Card -->
+    <div class="header-card">
+        <div class="header-title">
+            <h1>
+                <i class="fas fa-globe-asia"></i>
+                @ViewData["Title"]
+            </h1>
+            <p>إدارة قائمة الجنسيات المسجلة في النظام</p>
+        </div>
+        <a asp-action="Create" class="btn-create">
+            <i class="fas fa-plus-circle"></i>
+            إضافة جنسية جديدة
+        </a>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="بحث بالاسم العربي أو الإنجليزي..." />
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-globe-asia"></i>
+            <h3>لا توجد جنسيات</h3>
+            <p>لم يتم إضافة أي جنسيات بعد. يمكنك إضافة أول جنسية الآن!</p>
+            <a asp-action="Create" class="btn btn-primary mt-3">إضافة جنسية</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-card">
+            <table id="nationsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الجنسية (عربي)</th>
+                        <th>Nationality (English)</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Select((value, i) => new { i = i + 1, value }))
+                    {
+                        <tr>
+                            <td>@item.i</td>
+                            <td>@item.value.NationNm</td>
+                            <td>@item.value.NationNmE</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Details" asp-route-id="@item.value.Id" class="btn-action btn-view" title="عرض التفاصيل">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.value.Id" class="btn-action btn-edit" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="confirmDelete(@item.value.Id, '@item.value.NationNm')" class="btn-action btn-delete" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Delete Form (Hidden) -->
+<form id="deleteForm" method="post" style="display: none;">
+    <input type="hidden" name="id" id="deleteId" />
+</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // Search functionality
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#nationsTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+        // Confirm Delete
+        function confirmDelete(id, name) {
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                text: `هل أنت متأكد من حذف الجنسية "${name}"؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#deleteId').val(id);
+                    $('#deleteForm').attr('action', '/Nation/Delete/' + id).submit();
+                }
+            });
+        }
+    </script>
+}
