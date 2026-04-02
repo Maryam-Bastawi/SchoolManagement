@@ -58,9 +58,24 @@ namespace SchoolManagement.Controllers
         // GET: StudyYear/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
+            // جلب السنة الدراسية من الخدمة
             var dto = await _studyYearService.GetByIdAsync(id);
             if (dto == null) return NotFound();
-            return View(dto);
+
+            // إنشاء DTO للتحديث وملء كل الحقول
+            var updateDto = new UpdateStudyYearDto
+            {
+                Id = dto.Id,
+                StudyYearsNm = dto.StudyYearsNm,
+                StudyYearsNm_E = dto.StudyYearsNm_E,
+                FromDate = dto.FromDate,
+                ToDate = dto.ToDate,
+                IsClosed = dto.IsClosed,
+                IsNewYear = dto.IsNewYear,
+                IsDefault = dto.IsDefault
+            };
+
+            return View(updateDto); // إرسال DTO المعدل للـ View
         }
 
         // POST: StudyYear/Edit/5

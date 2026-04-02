@@ -60,7 +60,14 @@ namespace SchoolManagement.Controllers
         {
             var dto = await _supervisorService.GetByIdAsync(id); // بيرجع UpdateSupervisorDto جاهز
             if (dto == null) return NotFound();
-            return View(dto);
+            var data = new UpdateSupervisorDto
+            {
+                Id = dto.Id,
+                SupervisorNAME = dto.SupervisorNAME,
+                SupervisorNAME_E = dto.SupervisorNAME_E,
+                SupervisorMobile = dto.SupervisorMobile
+            };
+            return View(data);
         }
 
         // POST: Supervisor/Edit/5

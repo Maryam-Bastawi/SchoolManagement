@@ -28,7 +28,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new School
             {
-                Id = await IdGenerator.GetNextIdAsync(SchoolRepo), // توليد Id جديد
                 SchoolNm = dto.SchoolNm,
                 SchoolNmEn = dto.SchoolNmEn
             };

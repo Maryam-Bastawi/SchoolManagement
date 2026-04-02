@@ -24,16 +24,16 @@ namespace SchoolManagement.Domain.Entities
         public decimal? RegistrationFee { get; set; }
         public decimal? BookFee { get; set; }
         public decimal? OtherFee { get; set; }
-        public decimal? TransportFee { get; set; }
         public int? TransCostId { get; set; } 
         public TransCost? TransCost { get; set; }
         // تصعيد الطلاب
         public int? NextStageId { get; set; }
+        public Stages? NextStage { get; set; }
         public int? NextGradeId { get; set; }
+        public Grades? NextGrade { get; set; } 
         public int? NextSchoolId { get; set; }
-        public string? PromotionType { get; set; }
+        public School? NextSchool { get; set; }
         //حالة الطالب (متخرج)
-        public bool IsExit { get; set; } = false;
         public StudentStatus? studentStatus { get; set; }
         public int? studStatusId { get; set; }
     }

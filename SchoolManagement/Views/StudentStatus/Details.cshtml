@@ -1,0 +1,348 @@
+﻿@using SchoolManagement.Application.DTOs.StuStatus
+@model GetStudentStatusDto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "تفاصيل حاله الطالب";
+    Layout = "_Layout";
+}
+
+<style>
+    .details-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    .details-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        padding: 25px 30px;
+    }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .card-header h2 i {
+                color: #b68b40;
+            }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .info-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        color: #0d6e6e;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .section-title i {
+            color: #b68b40;
+        }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .info-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        transition: all 0.2s ease;
+    }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-color: #17a2b8;
+        }
+
+        .info-item.full-width {
+            grid-column: span 3;
+        }
+
+    .info-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .info-label i {
+            color: #17a2b8;
+            width: 20px;
+        }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0d6e6e;
+    }
+
+    .info-value-ar {
+        font-size: 1.1rem;
+        color: #495057;
+    }
+
+    .badge-details {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    .badge-instock {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .badge-outofstock {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .plate-number {
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0d6e6e;
+        background: #e9ecef;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .driver-info {
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .driver-icon {
+        width: 50px;
+        height: 50px;
+        background: #b68b40;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .driver-details h4 {
+        margin: 0;
+        color: #856404;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .driver-details p {
+        margin: 5px 0 0 0;
+        color: #495057;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-edit {
+        background: #b68b40;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background: #9e7536;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-back {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    /* License status */
+    .license-status {
+        margin-top: 8px;
+        font-size: 0.9rem;
+    }
+
+    .license-valid {
+        color: #28a745;
+    }
+
+    .license-expired {
+        color: #dc3545;
+    }
+
+    .license-warning {
+        color: #ffc107;
+    }
+
+    @@media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-item.full-width {
+            grid-column: span 1;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .driver-info {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+<div class="details-container">
+    <div class="details-card">
+
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-user-check"></i>
+                @ViewData["Title"]
+            </h2>
+        </div>
+
+        <div class="card-body">
+
+            <!-- معلومات حالة الطالب الأساسية -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-user-check"></i>
+                    معلومات الحالة الأساسية
+                </div>
+
+                <div class="info-grid">
+
+                    <!-- ID -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-hashtag"></i>
+                            الرقم التعريفي
+                        </div>
+                        <div class="info-value">@Model.Id</div>
+                    </div>
+
+                    <!-- Status Name AR -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-language"></i>
+                            اسم الحالة (عربي)
+                        </div>
+                        <div class="info-value-ar">
+                            @if (!string.IsNullOrEmpty(Model.StatusName))
+                            {
+                                @Model.StatusName
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Status Name EN -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-language"></i>
+                            اسم الحالة (إنجليزي)
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.StatusNameEn))
+                            {
+                                @Model.StatusNameEn
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="button-group">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">
+                    <i class="fas fa-edit"></i> تعديل بيانات الحالة
+                </a>
+
+                <a asp-action="Index" class="btn btn-back">
+                    <i class="fas fa-arrow-right"></i> العودة للقائمة
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

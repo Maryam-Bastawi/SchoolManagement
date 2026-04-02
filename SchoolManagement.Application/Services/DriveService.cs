@@ -30,7 +30,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Drive
             {
-                Id = await IdGenerator.GetNextIdAsync(DriveRepo), // توليد Id جديد
                 DrvNm = dto.DrvNm,
                 DrvNmEn = dto.DrvNmEn,
                 Mobil = dto.Mobil,

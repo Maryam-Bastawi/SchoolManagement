@@ -14,26 +14,25 @@ namespace SchoolManagement.Application.Services
 {
     public class StudentService : IStudentService
     {
-
         private readonly IUnitOfWork _unitOfWork;
 
-        // Constructor
         public StudentService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        // Helper property to access Student repository easily
         private IGenericRepository<Student, int> StudentRepo =>
             _unitOfWork.Repository<Student, int>();
 
+
         public async Task<List<CreateStudentDto>> GetAllStudentsAsync()
         {
-            var students = await _unitOfWork.Repository<Student, int>().GetAllAsync();
+            var students = await StudentRepo.GetAllAsync();
 
             return students.Select(s => new CreateStudentDto
             {
                 Id = s.Id,
+                DisplayCode = s.DisplayCode,
                 FullName = s.FullName,
                 EnglishName = s.EnglishName,
                 StudentSex = s.StudentSex,
@@ -70,17 +69,24 @@ namespace SchoolManagement.Application.Services
                 IsGraduate = s.IsGraduate,
                 GraduateDate = s.GraduateDate,
                 Note = s.Note,
-                Note2 = s.Note2
+                Note2 = s.Note2,
+                SUSPIND_AC = s.SUSPIND_AC,
+                SuspenDate = s.SuspenDate
             }).ToList();
         }
+
+
         public async Task<CreateStudentDto?> GetByIdAsync(int id)
         {
-            var student = await _unitOfWork.Repository<Student, int>().GetByIdAsync(id);
-            if (student == null) return null;
+            var student = await StudentRepo.GetByIdAsync(id);
+
+            if (student == null)
+                return null;
 
             return new CreateStudentDto
             {
                 Id = student.Id,
+                DisplayCode = student.DisplayCode,
                 FullName = student.FullName,
                 EnglishName = student.EnglishName,
                 StudentSex = student.StudentSex,
@@ -117,9 +123,13 @@ namespace SchoolManagement.Application.Services
                 IsGraduate = student.IsGraduate,
                 GraduateDate = student.GraduateDate,
                 Note = student.Note,
-                Note2 = student.Note2
+                Note2 = student.Note2,
+                SUSPIND_AC = student.SUSPIND_AC,
+                SuspenDate = student.SuspenDate
             };
         }
+
+
         public async Task<int> CreateAsync(CreateStudentDto dto)
         {
             var student = new Student
@@ -161,20 +171,27 @@ namespace SchoolManagement.Application.Services
                 GraduateDate = dto.GraduateDate,
                 Note = dto.Note,
                 Note2 = dto.Note2,
-                CreatedDate = DateTime.Now,
-                DisplayCode = $"Student-{dto.Id:D3}"
+                SUSPIND_AC = dto.SUSPIND_AC,
+                SuspenDate = dto.SuspenDate,
+                CreatedDate = DateTime.Now
+            };
 
-            }; 
+            await StudentRepo.AddAsync(student);
+            await _unitOfWork.CompleteAsync();
 
-            await _unitOfWork.Repository<Student, int>().AddAsync(student);
+            student.DisplayCode = $"Student-{student.Id:D3}";
             await _unitOfWork.CompleteAsync();
 
             return student.Id;
         }
+
+
         public async Task UpdateAsync(CreateStudentDto dto)
         {
-            var student = await _unitOfWork.Repository<Student, int>().GetByIdAsync(dto.Id);
-            if (student == null) throw new Exception("Student not found");
+            var student = await StudentRepo.GetByIdAsync(dto.Id);
+
+            if (student == null)
+                throw new Exception("Student not found");
 
             student.FullName = dto.FullName;
             student.EnglishName = dto.EnglishName;
@@ -213,19 +230,23 @@ namespace SchoolManagement.Application.Services
             student.GraduateDate = dto.GraduateDate;
             student.Note = dto.Note;
             student.Note2 = dto.Note2;
+            student.SUSPIND_AC = dto.SUSPIND_AC;
+            student.SuspenDate = dto.SuspenDate;
 
-            _unitOfWork.Repository<Student, int>().Update(student);
+            StudentRepo.Update(student);
             await _unitOfWork.CompleteAsync();
         }
+
+
         public async Task DeleteAsync(int id)
         {
-            var student = await _unitOfWork.Repository<Student, int>().GetByIdAsync(id);
-            if (student == null) throw new Exception("Student not found");
+            var student = await StudentRepo.GetByIdAsync(id);
 
-            _unitOfWork.Repository<Student, int>().Delete(student);
+            if (student == null)
+                throw new Exception("Student not found");
+
+            StudentRepo.Delete(student);
             await _unitOfWork.CompleteAsync();
         }
-
-
     }
 }

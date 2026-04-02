@@ -61,7 +61,15 @@ namespace SchoolManagement.Controllers
         {
             var dto = await _driveService.GetByIdAsync(id); // بيرجع UpdateDriveDto جاهز
             if (dto == null) return NotFound();
-            return View(dto);
+            var data = new UpdateDriveDto
+            {
+                Id = dto.Id,
+                DrvNm = dto.DrvNm,
+                DrvNmEn = dto.DrvNmEn,
+                LicEnd = dto.LicEnd,
+                Mobil = dto.Mobil
+            };
+            return View(data);
         }
 
         // POST: Drive/Edit/5

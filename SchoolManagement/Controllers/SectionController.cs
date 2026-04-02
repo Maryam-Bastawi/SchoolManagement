@@ -59,7 +59,13 @@ namespace SchoolManagement.Controllers
         {
             var dto = await _sectionService.GetByIdAsync(id);
             if (dto == null) return NotFound();
-            return View(dto);
+            var data = new UpdateSectionDto
+            {
+                Id = dto.Id,
+                SectionName = dto.SectionName,
+                SectionNameEn = dto.SectionNameEn
+            };
+            return View(data);
         }
 
         // POST: Section/Edit/5

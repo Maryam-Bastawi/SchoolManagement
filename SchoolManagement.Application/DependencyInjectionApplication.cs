@@ -23,6 +23,22 @@ namespace SchoolManagement.Application
             services.AddScoped<IDriveService, DriveService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IBankService, BankService>();
+            services.AddScoped<IBranchService, BranchService>();
+            services.AddScoped<ISchoolService, SchoolService>();
+            services.AddScoped<IAreaService, AreaService>();
+            services.AddScoped<IStagesService, StagesService>();
+            services.AddScoped<ICostCenterService, CostCenterService>();
+            services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IGradesService, GradesService>();
+            services.AddScoped<IStudyYearService, StudyYearService>();
+            services.AddScoped<IStudentStatusService, StudentStatusService>();
+            services.AddScoped<ISupervisorService, SupervisorService>();
+            services.AddScoped<ITransCostService, TransCostService>();
+            services.AddScoped<ITransferTypeService, TransferTypeService>();
+            services.AddScoped<ITransLineService, TransLineService>();
+            services.AddScoped<IVatService, VatService>();
+            services.AddScoped<IClassService, ClassService>();
 
             return services;
         }

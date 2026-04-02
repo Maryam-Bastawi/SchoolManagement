@@ -8,8 +8,8 @@ namespace SchoolManagement.Application.DTOs.Bank
 {
     public class CreateBankDto
     {
-        public string? BankName { get; set; }
-        public string? BankNameEn { get; set; }
+        public string BankName { get; set; }
+        public string BankNameEn { get; set; }
         public string? Responsible { get; set; }
     }
 }

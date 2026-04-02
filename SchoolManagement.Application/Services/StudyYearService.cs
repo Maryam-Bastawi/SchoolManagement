@@ -1,4 +1,5 @@
-﻿using SchoolManagement.Application.DTOs.StudyYear;
+﻿using Microsoft.AspNetCore.Server.IISIntegration;
+using SchoolManagement.Application.DTOs.StudyYear;
 using SchoolManagement.Application.ServicesInterfaces;
 using SchoolManagement.Domain.Entities;
 using SchoolManagement.Infrastructure.Interface;
@@ -28,8 +29,13 @@ namespace SchoolManagement.Application.Services
                 .Select(x => new GetStudyYearDto
                 {
                     Id = x.Id,
-                    BRNNM = x.StudyYearsNm,
-                    BRNNM_E = x.StudyYearsNm_E,
+                    StudyYearsNm = x.StudyYearsNm,
+                    StudyYearsNm_E = x.StudyYearsNm_E,
+                    FromDate = x.FromDate,
+                    ToDate = x.ToDate,
+                    IsClosed = x.IsClosed,
+                    IsNewYear = x.IsNewYear,
+                    IsDefault = x.IsDefault
                 }).ToList();
         }
 
@@ -41,8 +47,13 @@ namespace SchoolManagement.Application.Services
             return new GetStudyYearDto
             {
                 Id = entity.Id,
-                BRNNM = entity.StudyYearsNm,
-                BRNNM_E = entity.StudyYearsNm_E,
+                StudyYearsNm = entity.StudyYearsNm,
+                StudyYearsNm_E = entity.StudyYearsNm_E,
+                FromDate = entity.FromDate,
+                ToDate = entity.ToDate,
+                IsClosed = entity.IsClosed,
+                IsNewYear = entity.IsNewYear,
+                IsDefault = entity.IsDefault
             };
         }
 
@@ -50,9 +61,15 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new StudyYear
             {
-                Id = await IdGenerator.GetNextIdAsync(StudyYearRepo),
-                StudyYearsNm = dto.BRNNM?.Trim(),
-                StudyYearsNm_E = dto.BRNNM_E?.Trim(),
+
+                StudyYearsNm = dto.StudyYearsNm?.Trim(),
+                StudyYearsNm_E = dto.StudyYearsNm_E?.Trim(),
+                FromDate = dto.FromDate,
+                ToDate = dto.ToDate,
+                IsClosed = dto.IsClosed,
+                IsNewYear = dto.IsNewYear,
+                IsDefault = dto.IsDefault
+
             };
 
             await StudyYearRepo.AddAsync(entity);
@@ -67,8 +84,13 @@ namespace SchoolManagement.Application.Services
             if (entity == null)
                 throw new KeyNotFoundException($"السنة الدراسية برقم {dto.Id} غير موجود");
 
-            entity.StudyYearsNm = dto.BRNNM?.Trim();
-            entity.StudyYearsNm_E = dto.BRNNM_E?.Trim();
+            entity.StudyYearsNm = dto.StudyYearsNm?.Trim();
+            entity.StudyYearsNm_E = dto.StudyYearsNm_E?.Trim();
+            entity.FromDate = dto.FromDate;
+            entity.ToDate = dto.ToDate;
+            entity.IsClosed = dto.IsClosed;
+            entity.IsNewYear = dto.IsNewYear;
+            entity.IsDefault = dto.IsDefault;
 
             StudyYearRepo.Update(entity);
             await _unitOfWork.CompleteAsync();

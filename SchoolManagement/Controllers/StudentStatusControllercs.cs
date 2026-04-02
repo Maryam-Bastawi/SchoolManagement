@@ -59,7 +59,14 @@ namespace SchoolManagement.Controllers
         {
             var dto = await _studentStatusService.GetByIdAsync(id);
             if (dto == null) return NotFound();
-            return View(dto);
+            var data = new UpdateStudentStatusDto
+            {
+                Id = dto.Id,
+                StatusName = dto.StatusName,
+                StatusNameEn = dto.StatusNameEn
+
+            };
+            return View(data);
         }
 
         // POST: StudentStatus/Edit/5

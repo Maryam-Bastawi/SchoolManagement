@@ -51,7 +51,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Stages
             {
-                Id = await IdGenerator.GetNextIdAsync(StagesRepo),
                 StageNM = dto.StageNM.Trim(),
                 StageNM_E = dto.StageNM_E.Trim()
             };

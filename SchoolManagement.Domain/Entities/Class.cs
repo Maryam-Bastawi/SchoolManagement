@@ -12,8 +12,8 @@ namespace SchoolManagement.Domain.Entities
         public string? ClassNm { get; set; }
         public string? ClassNmEn { get; set; }
         public int? GradeId { get; set; }
-        public int? NewGradeId { get; set; }
         public Grades? Grades { get; set; }
+
 
     }
 }

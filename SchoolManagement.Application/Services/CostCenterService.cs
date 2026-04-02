@@ -52,7 +52,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new CostCenter
             {
-                Id = await IdGenerator.GetNextIdAsync(CostCenterRepo),
                 CostNm = dto.CostNm.Trim(),
                 CostNme = dto.CostNme.Trim(),
                 Notes = dto.Notes?.Trim()

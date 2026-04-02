@@ -54,7 +54,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Section
             {
-                Id = await IdGenerator.GetNextIdAsync(SectionRepo),
 
                 SectionName = dto.SectionName.Trim(),
                 SectionNameEn = dto.SectionNameEn.Trim()

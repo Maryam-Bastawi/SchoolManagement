@@ -52,7 +52,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new TransLine
             {
-                Id = await IdGenerator.GetNextIdAsync(TransLineRepo),
                 TransLineName = dto.TransLineName?.Trim(),
                 TransLineNameEn = dto.TransLineNameEn?.Trim(),
                 Responsible = dto.Responsible?.Trim()

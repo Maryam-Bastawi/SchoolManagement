@@ -54,8 +54,7 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new StudentStatus
             {
-                Id = await IdGenerator
-                         .GetNextIdAsync(StudentStatusRepo),
+
 
                 StatusName = dto.StatusName.Trim(),
                 StatusNameEn = dto.StatusNameEn.Trim()

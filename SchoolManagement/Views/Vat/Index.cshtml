@@ -1,0 +1,619 @@
+﻿@using SchoolManagement.Application.DTOs.Vat
+@model IEnumerable<GetVatDto>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "أداره ضريبة القيمة المضافة";
+    Layout = "_Layout";
+    var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<style>
+    /* Index Page Styles - موحد مع باقي الصفحات */
+    .index-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+
+    /* Header Card */
+    .header-card {
+        background: linear-gradient(135deg, #0d6e6e 0%, #0a5a5a 100%);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .header-title h1 i {
+            color: #b68b40;
+            font-size: 2.2rem;
+        }
+
+    .header-title p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .btn-create {
+        background: #b68b40;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 15px rgba(182, 139, 64, 0.3);
+    }
+
+        .btn-create:hover {
+            background: transparent;
+            border-color: #b68b40;
+            color: #b68b40;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(182, 139, 64, 0.4);
+        }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border-color: #0d6e6e;
+        }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #0d6e6e20 0%, #0a5a5a20 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #0d6e6e;
+    }
+
+    .stat-content h3 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-content .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0d6e6e;
+        line-height: 1.2;
+    }
+
+    .stat-content small {
+        color: #b68b40;
+        font-size: 0.8rem;
+    }
+
+    /* Filters Card */
+    .filters-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #0d6e6e;
+            font-size: 1.1rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+            .search-box input:focus {
+                outline: none;
+                border-color: #0d6e6e;
+                box-shadow: 0 0 0 3px rgba(13, 110, 110, 0.1);
+            }
+
+    .filter-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .badge-filter {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 50px;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .badge-filter:hover {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+        .badge-filter.active {
+            background: #0d6e6e;
+            color: white;
+            border-color: #0d6e6e;
+        }
+
+    /* Table Card */
+    .table-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    th {
+        background: #f8f9fa;
+        color: #0d6e6e;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 18px 15px;
+        text-align: center;
+        border-bottom: 2px solid #0d6e6e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+    }
+
+    tr:hover td {
+        background: #f8f9fa;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Discount Type Badges */
+    .discount-type {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .type-value {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .type-percent {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+    }
+
+    .amount-value {
+        font-weight: 700;
+        color: #0d6e6e;
+    }
+
+    .amount-percent {
+        font-weight: 700;
+        color: #b68b40;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        color: white;
+    }
+
+    .btn-view {
+        background: #17a2b8;
+    }
+
+    .btn-edit {
+        background: #b68b40;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        filter: brightness(110%);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        border: 2px dashed #e9ecef;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #b68b40;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #0d6e6e;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+    /* Alert Messages */
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border-right: 4px solid #155724;
+        color: #155724;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        border-right: 4px solid #721c24;
+        color: #721c24;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    keyframes spin {
+        to
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    keyframes slideDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .header-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header-title h1 {
+            justify-content: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-badges {
+            justify-content: center;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+<div class="index-container">
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success"><i class="fas fa-check-circle"></i> @TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> @TempData["Error"]</div>
+    }
+
+    <!-- Header Card -->
+    <div class="header-card">
+        <div class="header-title">
+            <h1><i class="fas fa-percentage"></i> @ViewData["Title"]</h1>
+            <p>عرض وإدارة جميع الضرائب المسجلة في النظام</p>
+        </div>
+        <a asp-action="Create" class="btn-create"><i class="fas fa-plus-circle"></i> إضافة ضريبة جديدة</a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-list"></i></div>
+            <div class="stat-content">
+                <h3>إجمالي الضرائب</h3>
+                <div class="stat-number">@Model?.Count()</div>
+                <small>مسجلة</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="بحث بالاسم أو النسبة..." />
+        </div>
+        <div class="filter-badges">
+            <span class="badge-filter active" onclick="filterStatus('all')"><i class="fas fa-list"></i> الكل</span>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-card">
+            <div class="table-responsive">
+                <table id="vatTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم الضريبة</th>
+                            <th>اسم الضريبة (إنجليزي)</th>
+                            <th>النسبة %</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Select((value, i) => new { i = i + 1, value }))
+                        {
+                            <tr id="row-@item.value.Id">
+                                <td>@item.i</td>
+                                <td>@item.value.VATNM</td>
+                                <td>@item.value.VATNM_E</td>
+                                <td>@item.value.VAT_PERCENT</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-action="Details" asp-route-id="@item.value.Id" class="btn-action btn-view"><i class="fas fa-eye"></i> عرض</a>
+                                        <a asp-action="Edit" asp-route-id="@item.value.Id" class="btn-action btn-edit"><i class="fas fa-edit"></i> تعديل</a>
+                                        <button onclick="confirmDelete(@item.value.Id,'@item.value.VATNM',this)" class="btn-action btn-delete"><i class="fas fa-trash"></i> حذف</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-percentage"></i>
+            <h3>لا توجد ضرائب</h3>
+            <p>لم يتم إضافة أي ضريبة بعد. يمكنك إضافة أول ضريبة الآن!</p>
+            <a asp-action="Create" class="btn-create"><i class="fas fa-plus-circle"></i> إضافة ضريبة جديدة</a>
+        </div>
+    }
+</div>
+
+<!-- Delete Form Hidden -->
+<form id="deleteForm" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteId" />
+    <input type="hidden" name="__RequestVerificationToken" value="@requestToken" />
+</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const antiForgeryToken='@requestToken';
+
+        $(document).ready(function(){
+            setTimeout(()=>$('.alert').fadeOut('slow'),5000);
+            $("#searchInput").on("keyup",function(){
+                var value=$(this).val().toLowerCase();
+                $("#vatTable tbody tr").filter(function(){
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value)>-1)
+                });
+            });
+        });
+
+        function filterStatus(status){
+            $('.badge-filter').removeClass('active');
+            $(`.badge-filter[onclick*="${status}"]`).addClass('active');
+            if(status==='all'){ $('#vatTable tbody tr').show(); }
+        }
+
+        function confirmDelete(id,name,buttonElement){
+            Swal.fire({
+                title:'تأكيد الحذف',
+                text:`هل أنت متأكد من حذف الضريبة "${name}"؟`,
+                icon:'warning', showCancelButton:true, confirmButtonColor:'#dc3545', cancelButtonColor:'#6c757d',
+                confirmButtonText:'نعم، احذف', cancelButtonText:'إلغاء'
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    const originalText=buttonElement.innerHTML;
+                    buttonElement.innerHTML='<span class="loading-spinner"></span> جاري الحذف...';
+                    buttonElement.disabled=true;
+                    $.ajax({
+                        url:'/Vat/DeleteConfirmed/'+id,
+                        type:'POST',
+                        headers:{'RequestVerificationToken':antiForgeryToken},
+                        success:function(response){
+                            if(response.success){
+                                $(`#row-${id}`).fadeOut(500,function(){ $(this).remove(); });
+                                Swal.fire({title:'تم الحذف!', text:response.message, icon:'success', timer:2000, showConfirmButton:false});
+                            }else{
+                                Swal.fire({title:'خطأ!', text:response.message, icon:'error', confirmButtonText:'حسناً'});
+                                buttonElement.innerHTML=originalText; buttonElement.disabled=false;
+                            }
+                        },
+                        error:function(){
+                            Swal.fire({title:'خطأ!', text:'حدث خطأ في الاتصال بالخادم', icon:'error', confirmButtonText:'حسناً'});
+                            buttonElement.innerHTML=originalText; buttonElement.disabled=false;
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

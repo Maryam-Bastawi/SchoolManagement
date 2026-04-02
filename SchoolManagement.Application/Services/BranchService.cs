@@ -52,7 +52,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Branch
             {
-                Id = await IdGenerator.GetNextIdAsync(BranchRepo),
                 BRNNM = dto.BRNNM.Trim(),
                 BRNNM_E = dto.BRNNM_E.Trim(),
                 RESP = dto.RESP?.Trim()

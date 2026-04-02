@@ -31,7 +31,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Supervisor
             {
-                Id = await IdGenerator.GetNextIdAsync(SupervisorRepo),
                 SupervisorNAME = dto.SupervisorNAME,
                 SupervisorNAME_E = dto.SupervisorNAME_E,
                 SupervisorMobile = dto.SupervisorMobile

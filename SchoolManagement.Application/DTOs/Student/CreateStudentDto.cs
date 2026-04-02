@@ -90,6 +90,7 @@ using System.Text;
         public int? Discounttypeid { get; set; }
         [Display(Name = "حالة الطالب")]
         public int? StudentStatusId { get; set; }
+        public int? CREDIT_LIMIT { get; set; }
         [Display(Name = "حالة الضريبة")]
         public string? TaxStatus { get; set; }
 
@@ -109,7 +110,10 @@ using System.Text;
 
         [Display(Name = "ملاحظات 2")]
         public string? Note2 { get; set; }
+        public bool ISNEWYEAR { get; set; }
 
+        public bool SUSPIND_AC { get; set; }
+        public DateTime? SuspenDate { get; set; } //تاريخ السحب
 
 
 

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SchoolManagement.Application.DTOs.Bank;
 using SchoolManagement.Application.DTOs.Nation;
+using SchoolManagement.Application.Services;
 using SchoolManagement.Application.ServicesInterfaces;
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SchoolManagement.Controllers
 {
@@ -59,48 +62,53 @@ namespace SchoolManagement.Controllers
         // GET: Nation/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _nationService.GetByIdAsync(id); // بيرجع UpdateNationDto جاهز
-            if (dto == null) return NotFound();
+            var data = await _nationService.GetByIdAsync(id); // بيرجع UpdateNationDto جاهز
+            if (data == null) return NotFound();
+            var dto = new UpdateNationDto
+            {
+                Id = data.Id,
+                NationNm = data.NationNm,
+                NationNmE = data.NationNmE
+            };
             return View(dto);
         }
-
-        // POST: Nation/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UpdateNationDto dto)
-        {
-            if (id != dto.Id) return NotFound();
-            if (!ModelState.IsValid) return View(dto);
-
-            try
+            // POST: Nation/Edit/5
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Edit(int id, UpdateNationDto dto)
             {
-                await _nationService.UpdateAsync(dto);
-                TempData["SuccessMessage"] = "تم تعديل بيانات الجنسية بنجاح!";
+                if (id != dto.Id) return NotFound();
+                if (!ModelState.IsValid) return View(dto);
+
+                try
+                {
+                    await _nationService.UpdateAsync(dto);
+                    TempData["SuccessMessage"] = "تم تعديل بيانات الجنسية بنجاح!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"حدث خطأ أثناء التعديل: {ex.Message}");
+                    return View(dto);
+                }
+            }
+
+            // POST: Nation/Delete/5
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Delete(int id)
+            {
+                try
+                {
+                    await _nationService.DeleteAsync(id);
+                    TempData["SuccessMessage"] = "تم حذف الجنسية بنجاح!";
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"حدث خطأ أثناء الحذف: {ex.Message}";
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"حدث خطأ أثناء التعديل: {ex.Message}");
-                return View(dto);
-            }
-        }
-
-        // POST: Nation/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await _nationService.DeleteAsync(id);
-                TempData["SuccessMessage"] = "تم حذف الجنسية بنجاح!";
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"حدث خطأ أثناء الحذف: {ex.Message}";
-            }
-
-            return RedirectToAction(nameof(Index));
         }
     }
-}

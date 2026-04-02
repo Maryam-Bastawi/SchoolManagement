@@ -3,38 +3,27 @@
     public class GetGradesDto
     {
         public int Id { get; set; }
-
-        public string GradesNm { get; set; } = null!;
-        public string GradesNm_E { get; set; } = null!;
-
+        public string? GradesNm { get; set; }
+        public string? GradesNm_E { get; set; }
         public int? StagesId { get; set; }
-        public string? StageName { get; set; }
-
+        public string? StageName { get; set; } // للعرض
         public int? SchoolId { get; set; }
-        public string? SchoolName { get; set; }
-
+        public string? SchoolName { get; set; } // للعرض
         public int? CostCenterId { get; set; }
-        public string? CostCenterName { get; set; }
-
+        public string? CostCenterName { get; set; } // للعرض
         public int? TransCostId { get; set; }
-
-        // Fees
         public decimal? Term1Fee { get; set; }
         public decimal? Term2Fee { get; set; }
         public decimal? RegistrationFee { get; set; }
         public decimal? BookFee { get; set; }
         public decimal? OtherFee { get; set; }
-        public decimal? TransportFee { get; set; }
-
-        // Promotion
         public int? NextStageId { get; set; }
+        public string? NextStageName { get; set; } // للعرض
         public int? NextGradeId { get; set; }
+        public string? NextGradeName { get; set; } // للعرض
         public int? NextSchoolId { get; set; }
-        public string? PromotionType { get; set; }
-
-        public bool IsExit { get; set; }
-
+        public string? NextSchoolName { get; set; } // للعرض
         public int? studStatusId { get; set; }
-        public string? StudentStatusName { get; set; }
+        public string? StudentStatusName { get; set; } // للعرض
     }
 }

@@ -59,9 +59,18 @@ namespace SchoolManagement.Controllers
         // GET: TransCost/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _transCostService.GetByIdAsync(id); // بيرجع UpdateTransCostDto جاهز
+            var dto = await _transCostService.GetByIdAsync(id);
+            var data = new UpdateTransCostDto
+            {
+                Id = dto.Id,
+                TransCostNm = dto.TransCostNm,
+                TranscostnmE = dto.TranscostnmE,
+                TransportCostValue = dto.TransportCostValue,
+                TransportCostValue2 = dto.TransportCostValue2,
+                DiscountPercentage = dto.DiscountPercentage
+            };
             if (dto == null) return NotFound();
-            return View(dto);
+            return View(data);
         }
 
         // POST: TransCost/Edit/5

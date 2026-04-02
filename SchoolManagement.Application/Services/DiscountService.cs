@@ -59,7 +59,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Discount
             {
-                Id = await IdGenerator.GetNextIdAsync(DiscountRepo), // توليد Id جديد
                 DescountNm = dto.DescountNm.Trim(),
                 DescountNm_E = dto.DescountNm_E.Trim(),
                 DiscVal = dto.DiscVal,

@@ -50,7 +50,8 @@ namespace SchoolManagement.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"حدث خطأ أثناء الإضافة: {ex.Message}");
+                var inner = ex.InnerException?.Message;
+                ModelState.AddModelError("", $"Error: {inner ?? ex.Message}");
                 return View(dto);
             }
         }
@@ -58,11 +59,21 @@ namespace SchoolManagement.Controllers
         // GET: Bank/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _bankService.GetByIdAsync(id); // بيرجع UpdateBankDto جاهز
-            if (dto == null) return NotFound();
-            return View(dto);
-        }
+            var data = await _bankService.GetByIdAsync(id); // بيرجع GetBankDto
 
+            if (data == null) return NotFound();
+
+            // تحويل صريح لـ UpdateBankDto
+            var dto = new UpdateBankDto
+            {
+                Id = data.Id,
+                BankName = data.BankName,
+                BankNameEn = data.BankNameEn,
+                Responsible = data.Responsible
+            };
+
+            return View(dto); // هنا النوع صحيح
+        }
         // POST: Bank/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]

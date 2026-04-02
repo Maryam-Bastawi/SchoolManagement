@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SchoolManagement.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,9 @@ namespace SchoolManagement.Infrastructure.Context
         public DbSet<Bank> Banks { get; set; } 
         public DbSet<Area> Areas { get; set; } 
         public DbSet<Branch> Branches { get; set; } 
+        public DbSet<Vat> Vats { get; set; } 
         public DbSet<Supervisor> supervisors { get; set; } 
+        public DbSet<ApplicationUser> Users { get; set; } 
+        public DbSet<IdentityRole> Roles { get; set; } 
     }
 }

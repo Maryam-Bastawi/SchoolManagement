@@ -60,8 +60,7 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new TransCost
             {
-                Id = await IdGenerator
-                        .GetNextIdAsync(TransCostRepo),
+
 
                 TransCostNm = dto.TransCostNm.Trim(),
                 TranscostnmE = dto.TranscostnmE.Trim(),

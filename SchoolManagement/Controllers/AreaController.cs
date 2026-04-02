@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Application.DTOs.Areas;
+using SchoolManagement.Application.DTOs.Schoool;
 using SchoolManagement.Application.ServicesInterfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SchoolManagement.Controllers
 {
@@ -58,8 +60,16 @@ namespace SchoolManagement.Controllers
         // GET: Area/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _areaService.GetByIdAsync(id); // بيرجع UpdateAreaDto جاهز
-            if (dto == null) return NotFound();
+            var data = await _areaService.GetByIdAsync(id); // بيرجع UpdateAreaDto جاهز
+            if (data == null) return NotFound();
+            var dto = new UpdateAreaDto
+            {
+                Id = data.Id,
+                AreaNm = data.AreaNm,
+                AreaNm_E = data.AreaNm_E,
+                Resp = data.Resp
+
+            };
             return View(dto);
         }
 

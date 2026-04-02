@@ -1,0 +1,679 @@
+﻿@using SchoolManagement.Application.DTOs.Grades
+@model GetGradesDto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "تفاصيل الصف";
+    Layout = "_Layout";
+}
+
+<style>
+    .details-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px; /* مسافة بسيطة من الجنب */
+    }
+
+    .details-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        padding: 25px 30px;
+    }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .card-header h2 i {
+                color: #b68b40;
+            }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .info-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        color: #0d6e6e;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .section-title i {
+            color: #b68b40;
+        }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .info-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        transition: all 0.2s ease;
+    }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-color: #17a2b8;
+        }
+
+        .info-item.full-width {
+            grid-column: span 3;
+        }
+
+    .info-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .info-label i {
+            color: #17a2b8;
+            width: 20px;
+        }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0d6e6e;
+    }
+
+    .info-value-ar {
+        font-size: 1.1rem;
+        color: #495057;
+    }
+
+    .badge-details {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    .badge-instock {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .badge-outofstock {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .plate-number {
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0d6e6e;
+        background: #e9ecef;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .driver-info {
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .driver-icon {
+        width: 50px;
+        height: 50px;
+        background: #b68b40;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .driver-details h4 {
+        margin: 0;
+        color: #856404;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .driver-details p {
+        margin: 5px 0 0 0;
+        color: #495057;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-edit {
+        background: #b68b40;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background: #9e7536;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-back {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    /* License status */
+    .license-status {
+        margin-top: 8px;
+        font-size: 0.9rem;
+    }
+
+    .license-valid {
+        color: #28a745;
+    }
+
+    .license-expired {
+        color: #dc3545;
+    }
+
+    .license-warning {
+        color: #ffc107;
+    }
+
+    @@media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-item.full-width {
+            grid-column: span 1;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .driver-info {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+<div class="details-container">
+    <div class="details-card">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-graduation-cap"></i>
+                @ViewData["Title"]
+            </h2>
+            <p>عرض تفاصيل الصف الدراسي</p>
+        </div>
+
+        <div class="card-body">
+
+            <!-- معلومات الصف الأساسية -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    معلومات الصف الأساسية
+                </div>
+
+                <div class="info-grid">
+                    <!-- ID -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-hashtag"></i>
+                            الرقم التعريفي
+                        </div>
+                        <div class="info-value">@Model.Id</div>
+                    </div>
+
+                    <!-- Grade Name AR -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-language"></i>
+                            اسم الصف (عربي)
+                        </div>
+                        <div class="info-value-ar">
+                            @if (!string.IsNullOrEmpty(Model.GradesNm))
+                            {
+                                <i class="fas fa-graduation-cap"></i>
+                                @Model.GradesNm
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Grade Name EN -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-language"></i>
+                            اسم الصف (إنجليزي)
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.GradesNm_E))
+                            {
+                                @Model.GradesNm_E
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- موقع الصف الدراسي -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    موقع الصف الدراسي
+                </div>
+
+                <div class="info-grid">
+                    <!-- Stage -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-layer-group"></i>
+                            المرحلة
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.StageName))
+                            {
+                                <span class="stage-badge">@Model.StageName</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- School -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-school"></i>
+                            المدرسة
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.SchoolName))
+                            {
+                                <i class="fas fa-building"></i>
+                                @Model.SchoolName
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Cost Center -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-chart-line"></i>
+                            مركز التكلفة
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.CostCenterName))
+                            {
+                                <i class="fas fa-chart-pie"></i>
+                                @Model.CostCenterName
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الرسوم الدراسية -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    الرسوم الدراسية
+                </div>
+
+                <div class="info-grid">
+                    <!-- Term1 Fee -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-dollar-sign"></i>
+                            رسوم الفصل الأول
+                        </div>
+                        <div class="info-value fee-value">
+                            @if (Model.Term1Fee.HasValue && Model.Term1Fee.Value > 0)
+                            {
+                                <span class="fee-amount">@Model.Term1Fee.Value.ToString("N2")</span>
+                                <small>ج.م</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Term2 Fee -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-dollar-sign"></i>
+                            رسوم الفصل الثاني
+                        </div>
+                        <div class="info-value fee-value">
+                            @if (Model.Term2Fee.HasValue && Model.Term2Fee.Value > 0)
+                            {
+                                <span class="fee-amount">@Model.Term2Fee.Value.ToString("N2")</span>
+                                <small>ج.م</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Registration Fee -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-file-signature"></i>
+                            رسوم التسجيل
+                        </div>
+                        <div class="info-value fee-value">
+                            @if (Model.RegistrationFee.HasValue && Model.RegistrationFee.Value > 0)
+                            {
+                                <span class="fee-amount">@Model.RegistrationFee.Value.ToString("N2")</span>
+                                <small>ج.م</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Book Fee -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-book"></i>
+                            رسوم الكتب
+                        </div>
+                        <div class="info-value fee-value">
+                            @if (Model.BookFee.HasValue && Model.BookFee.Value > 0)
+                            {
+                                <span class="fee-amount">@Model.BookFee.Value.ToString("N2")</span>
+                                <small>ج.م</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Other Fee -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-plus-circle"></i>
+                            رسوم أخرى
+                        </div>
+                        <div class="info-value fee-value">
+                            @if (Model.OtherFee.HasValue && Model.OtherFee.Value > 0)
+                            {
+                                <span class="fee-amount">@Model.OtherFee.Value.ToString("N2")</span>
+                                <small>ج.م</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Transport Cost -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-bus"></i>
+                            تكلفة النقل
+                        </div>
+                        <div class="info-value">
+                            @if (Model.TransCostId.HasValue)
+                            {
+                                <span class="transport-badge">
+                                    <i class="fas fa-bus"></i>
+                                    معرف: @Model.TransCostId
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Fees Summary -->
+                @{
+                    var totalFees = (Model.Term1Fee ?? 0) + (Model.Term2Fee ?? 0);
+                    var grandTotal = totalFees + (Model.RegistrationFee ?? 0) + (Model.BookFee ?? 0) + (Model.OtherFee ?? 0);
+                }
+                @if (grandTotal > 0)
+                {
+                    <div class="total-summary">
+                        <div class="summary-item">
+                            <span>إجمالي رسوم الفصلين:</span>
+                            <strong>@totalFees.ToString("N2") ج.م</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>إجمالي الرسوم الكلية:</span>
+                            <strong class="grand-total">@grandTotal.ToString("N2") ج.م</strong>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- بيانات التصعيد -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-arrow-up"></i>
+                    بيانات التصعيد
+                    <small>(للترقية إلى مرحلة أعلى)</small>
+                </div>
+
+                <div class="info-grid">
+                    <!-- Next Stage -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-layer-group"></i>
+                            المرحلة التالية
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.NextStageName))
+                            {
+                                <span class="next-stage-badge">
+                                    <i class="fas fa-arrow-circle-up"></i>
+                                    @Model.NextStageName
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Next Grade -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-graduation-cap"></i>
+                            الصف التالي
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.NextGradeName))
+                            {
+                                <span class="next-grade-badge">
+                                    <i class="fas fa-arrow-circle-up"></i>
+                                    @Model.NextGradeName
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Next School -->
+                    <div class="info-item full-width">
+                        <div class="info-label">
+                            <i class="fas fa-school"></i>
+                            المدرسة التالية
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.NextSchoolName))
+                            {
+                                <div class="school-info">
+                                    <div class="school-icon">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="school-details">
+                                        <h4>@Model.NextSchoolName</h4>
+                                        <p>المدرسة التي ينتقل إليها الطالب بعد التخرج</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- حالة الطالب -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-user-graduate"></i>
+                    حالة الطالب الافتراضية
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item full-width">
+                        <div class="info-label">
+                            <i class="fas fa-user-check"></i>
+                            حالة الطالب
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.StudentStatusName))
+                            {
+                                <div class="student-status-info">
+                                    <div class="status-icon">
+                                        <i class="fas @(Model.StudentStatusName == "متخرج" ? "fa-graduation-cap" : "fa-user-check")"></i>
+                                    </div>
+                                    <div class="status-details">
+                                        <h4>@Model.StudentStatusName</h4>
+                                        <p>الحالة الافتراضية للطلاب المسجلين في هذا الصف</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="button-group">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">
+                    <i class="fas fa-edit"></i> تعديل بيانات الصف
+                </a>
+                <a asp-action="Index" class="btn btn-back">
+                    <i class="fas fa-arrow-right"></i> العودة للقائمة
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // أي سكريبت إضافي إذا احتجت
+        });
+    </script>
+}

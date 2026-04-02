@@ -63,6 +63,8 @@ namespace SchoolManagement.Domain.Entities
         public string? Note { get; set; }
         public string? Note2 { get; set; }
         public bool StopAutoPromotion { get; set; }
+        public bool SUSPIND_AC { get; set; }
+        public bool ISNEWYEAR { get; set; }
         public string? BirthPlace { get; set; }
         public DateTime? SuspenDate { get; set; } //تاريخ السحب
         public DateTime? GraduateDate { get; set; }
@@ -71,6 +73,7 @@ namespace SchoolManagement.Domain.Entities
         public DateTime? EnrollmentDate { get; set; }   // تاريخ الالتحاق
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
 
+        public int? CREDIT_LIMIT { get; set; }
 
 
     }

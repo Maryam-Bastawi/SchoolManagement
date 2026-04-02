@@ -53,7 +53,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Nation
             {
-                Id = await IdGenerator.GetNextIdAsync(NationRepo),
                 NationNm = dto.NationNm.Trim(),
                 NationNmE = dto.NationNmE.Trim()
             };

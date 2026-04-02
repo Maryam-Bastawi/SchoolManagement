@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SchoolManagement.Application.DTOs.Branch;
 using SchoolManagement.Application.DTOs.Schoool;
 using SchoolManagement.Application.ServicesInterfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SchoolManagement.Controllers
 {
@@ -58,8 +60,15 @@ namespace SchoolManagement.Controllers
         // GET: Schools/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _schoolService.GetByIdAsync(id); // السيرفس بيرجع UpdateSchoolDto جاهز
-            if (dto == null) return NotFound();
+            var data = await _schoolService.GetByIdAsync(id); // السيرفس بيرجع UpdateSchoolDto جاهز
+            if (data == null) return NotFound();
+            var dto = new UpdateSchoolDto
+            {
+                Id = data.Id,
+                SchoolNm = data.SchoolNm,
+                SchoolNmEn = data.SchoolNmEn
+           
+            };
             return View(dto);
         }
 

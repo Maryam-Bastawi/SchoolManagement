@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SchoolManagement.Application.DTOs.Bank;
 using SchoolManagement.Application.DTOs.Branch;
+using SchoolManagement.Application.Services;
 using SchoolManagement.Application.ServicesInterfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SchoolManagement.Controllers
 {
@@ -58,8 +61,16 @@ namespace SchoolManagement.Controllers
         // GET: Branch/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _branchService.GetByIdAsync(id);
-            if (dto == null) return NotFound();
+            var data = await _branchService.GetByIdAsync(id);
+            if (data == null) return NotFound();
+            var dto = new UpdateBranchDto
+            {
+                Id = data.Id,
+                BRNNM = data.BRNNM,
+                BRNNM_E = data.BRNNM_E,
+                RESP = data.RESP
+            };
+
             return View(dto);
         }
 

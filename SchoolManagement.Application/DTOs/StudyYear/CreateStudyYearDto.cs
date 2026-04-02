@@ -8,8 +8,12 @@ namespace SchoolManagement.Application.DTOs.StudyYear
 {
     public class CreateStudyYearDto
     {
-        public string? BRNNM { get; set; }
-        public string? BRNNM_E { get; set; }
-        public string? RESP { get; set; }
+        public string? StudyYearsNm { get; set; }
+        public string? StudyYearsNm_E { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public bool IsClosed { get; set; }
+        public bool IsNewYear { get; set; }
+        public bool IsDefault { get; set; }
     }
 }

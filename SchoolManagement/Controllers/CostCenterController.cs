@@ -61,7 +61,13 @@ namespace SchoolManagement.Controllers
         {
             var dto = await _costCenterService.GetByIdAsync(id);
             if (dto == null) return NotFound();
-            return View(dto);
+            var data = new UpdateCostCenterDto
+            {
+                Id = dto.Id,
+                CostNm = dto.CostNm,
+                CostNme = dto.CostNme
+            };
+            return View(data);
         }
 
         // POST: CostCenter/Edit/5

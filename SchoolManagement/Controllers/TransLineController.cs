@@ -63,7 +63,14 @@ namespace SchoolManagement.Controllers
             {
                 var dto = await _transLineService.GetByIdAsync(id);
                 if (dto == null) return NotFound();
-                return View(dto);
+            var data = new UpdateTransLineDto
+            {
+                Id = dto.Id,
+                TransLineName = dto.TransLineName,
+                TransLineNameEn = dto.TransLineNameEn,
+                Responsible = dto.Responsible
+            };
+                return View(data);
             }
 
             // POST: TransLine/Edit/5

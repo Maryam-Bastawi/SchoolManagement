@@ -61,8 +61,14 @@ namespace SchoolManagement.Controllers
         {
             var dto = await _stagesService.GetByIdAsync(id);
             if (dto == null) return NotFound();
+            var dto1 = new UpdateStagesDto
+            {
+                Id = dto.Id,
+                StageNM = dto.StageNM,
+                StageNM_E = dto.StageNM_E
 
-            return View(dto);
+            };
+            return View(dto1);
         }
 
         // POST: Stages/Edit/5

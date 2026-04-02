@@ -52,7 +52,6 @@ namespace SchoolManagement.Application.Services
         {
             var entity = new Area
             {
-                Id = await IdGenerator.GetNextIdAsync(AreaRepo), // توليد Id جديد
                 AreaNm = dto.AreaNm.Trim(),
                 AreaNm_E = dto.AreaNm_E.Trim(),
                 Resp = dto.Resp.Trim()

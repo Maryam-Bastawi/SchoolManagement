@@ -22,6 +22,88 @@ namespace SchoolManagement.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("SchoolManagement.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAgree")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("SchoolManagement.Domain.Entities.Area", b =>
                 {
                     b.Property<int>("Id")
@@ -366,6 +448,9 @@ namespace SchoolManagement.Infrastructure.Migrations
                     b.Property<string>("BirthPlace")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CREDIT_LIMIT")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ClassroomId")
                         .HasColumnType("int");
 
@@ -402,6 +487,9 @@ namespace SchoolManagement.Infrastructure.Migrations
 
                     b.Property<DateTime?>("GraduateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("ISNEWYEAR")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("IdEndDate")
                         .HasColumnType("datetime2");
@@ -453,6 +541,9 @@ namespace SchoolManagement.Infrastructure.Migrations
 
                     b.Property<string>("Respons")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("SUSPIND_AC")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("SchoolId")
                         .HasColumnType("int");
@@ -668,6 +759,34 @@ namespace SchoolManagement.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransferTypes");
+                });
+
+            modelBuilder.Entity("SchoolManagement.Domain.Entities.Vat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IS_DEFUALT")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NOTES")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VATNM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VATNM_E")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("VAT_PERCENT")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vats");
                 });
 
             modelBuilder.Entity("SchoolManagement.Domain.Entities.Vehicle", b =>
