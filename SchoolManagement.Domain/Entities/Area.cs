@@ -13,4 +13,4 @@ namespace SchoolManagement.Domain.Entities
         public string? AreaNm_E { get; set; }
         public string? Resp { get; set; }
     }
-}
+}  

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SchoolManagement.Application.DTOs.Student;
 using SchoolManagement.Application.ServicesInterfaces;
 
@@ -38,7 +39,6 @@ namespace SchoolManagement.Controllers
             return View(pagedStudents);
         }
 
-        // GET: Student/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var student = await _studentService.GetByIdAsync(id);
@@ -50,66 +50,154 @@ namespace SchoolManagement.Controllers
         }
 
         // GET: Student/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new CreateStudentDto());
+            var viewModel = new StudentFormViewModel
+            {
+                Student = new CreateStudentDto(),
+                Stages = await _studentService.GetStagesListAsync(),
+                Grades = await _studentService.GetGradesListAsync(),
+                Classrooms = await _studentService.GetClassroomsListAsync(),
+                Schools = await _studentService.GetSchoolsListAsync(),
+                Nations = await _studentService.GetNationsListAsync(),
+                Sections = await _studentService.GetSectionsListAsync(),
+                Areas = await _studentService.GetAreasListAsync(),
+                StudentStatuses = await _studentService.GetStudentStatusesListAsync(),
+                TransferTypes = await _studentService.GetTransferTypesListAsync(),
+                Vehicles = await _studentService.GetVehiclesListAsync(),
+                Discounts = await _studentService.GetDiscountsListAsync(),
+                Genders = await _studentService.GetGendersListAsync()
+            };
+
+            return View(viewModel);
         }
 
-        // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateStudentDto dto)
+        public async Task<IActionResult> Create(StudentFormViewModel viewModel, IFormFile? StudentImage)
         {
             if (!ModelState.IsValid)
-                return View(dto);
+            {
+                // إعادة تحميل القوائم في حالة وجود خطأ
+                await ReloadDropdowns(viewModel);
+                return View(viewModel);
+            }
 
             try
             {
-                var id = await _studentService.CreateAsync(dto);
+                // ✅ تمرير الصورة إلى الـ Service
+                var id = await _studentService.CreateAsync(viewModel.Student, StudentImage);
 
-                TempData["SuccessMessage"] = $"✅ تم إضافة الطالب بنجاح بالكود: {id}";
+                TempData["SuccessMessage"] = $"✅ تم إضافة الطالب بنجاح بالرقم: {id}";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"حدث خطأ أثناء الإضافة: {ex.Message}");
-                return View(dto);
+
+                // إعادة تحميل القوائم
+                await ReloadDropdowns(viewModel);
+                return View(viewModel);
             }
         }
 
+        // دالة مساعدة لإعادة تحميل القوائم (لتجنب تكرار الكود)
+        private async Task ReloadDropdowns(StudentFormViewModel viewModel)
+        {
+            viewModel.Stages = await _studentService.GetStagesListAsync();
+            viewModel.Grades = await _studentService.GetGradesListAsync();
+            viewModel.Classrooms = await _studentService.GetClassroomsListAsync();
+            viewModel.Schools = await _studentService.GetSchoolsListAsync();
+            viewModel.Nations = await _studentService.GetNationsListAsync();
+            viewModel.Sections = await _studentService.GetSectionsListAsync();
+            viewModel.Areas = await _studentService.GetAreasListAsync();
+            viewModel.StudentStatuses = await _studentService.GetStudentStatusesListAsync();
+            viewModel.TransferTypes = await _studentService.GetTransferTypesListAsync();
+            viewModel.Vehicles = await _studentService.GetVehiclesListAsync();
+            viewModel.Discounts = await _studentService.GetDiscountsListAsync();
+            viewModel.Genders = await _studentService.GetGendersListAsync();
+        }
         // GET: Student/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _studentService.GetByIdAsync(id);
+            var student = await _studentService.GetByIdAsync(id);
 
-            if (dto == null)
+            if (student == null)
                 return NotFound();
 
-            return View(dto);
+            var viewModel = new StudentFormViewModel
+            {
+                Student = student,
+                Stages = await _studentService.GetStagesListAsync(),
+                Grades = await _studentService.GetGradesListAsync(),
+                Classrooms = await _studentService.GetClassroomsListAsync(),
+                Schools = await _studentService.GetSchoolsListAsync(),
+                Nations = await _studentService.GetNationsListAsync(),
+                Sections = await _studentService.GetSectionsListAsync(),
+                Areas = await _studentService.GetAreasListAsync(),
+                StudentStatuses = await _studentService.GetStudentStatusesListAsync(),
+                TransferTypes = await _studentService.GetTransferTypesListAsync(),
+                Vehicles = await _studentService.GetVehiclesListAsync(),
+                Discounts = await _studentService.GetDiscountsListAsync(),
+                Genders = await _studentService.GetGendersListAsync()
+            };
+
+            return View(viewModel);
         }
 
         // POST: Student/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CreateStudentDto dto)
+        public async Task<IActionResult> Edit(int id, StudentFormViewModel viewModel)
         {
-            if (id != dto.Id)
+            if (id != viewModel.Student.Id)
                 return NotFound();
 
             if (!ModelState.IsValid)
-                return View(dto);
+            {
+                // إعادة تحميل القوائم
+                viewModel.Stages = await _studentService.GetStagesListAsync();
+                viewModel.Grades = await _studentService.GetGradesListAsync();
+                viewModel.Classrooms = await _studentService.GetClassroomsListAsync();
+                viewModel.Schools = await _studentService.GetSchoolsListAsync();
+                viewModel.Nations = await _studentService.GetNationsListAsync();
+                viewModel.Sections = await _studentService.GetSectionsListAsync();
+                viewModel.Areas = await _studentService.GetAreasListAsync();
+                viewModel.StudentStatuses = await _studentService.GetStudentStatusesListAsync();
+                viewModel.TransferTypes = await _studentService.GetTransferTypesListAsync();
+                viewModel.Vehicles = await _studentService.GetVehiclesListAsync();
+                viewModel.Discounts = await _studentService.GetDiscountsListAsync();
+                viewModel.Genders = await _studentService.GetGendersListAsync();
+
+                return View(viewModel);
+            }
 
             try
             {
-                await _studentService.UpdateAsync(dto);
+                await _studentService.UpdateAsync(viewModel.Student);
 
-                TempData["SuccessMessage"] = "تم تعديل بيانات الطالب بنجاح!";
+                TempData["SuccessMessage"] = "✅ تم تعديل بيانات الطالب بنجاح!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"حدث خطأ أثناء التعديل: {ex.Message}");
-                return View(dto);
+
+                // إعادة تحميل القوائم
+                viewModel.Stages = await _studentService.GetStagesListAsync();
+                viewModel.Grades = await _studentService.GetGradesListAsync();
+                viewModel.Classrooms = await _studentService.GetClassroomsListAsync();
+                viewModel.Schools = await _studentService.GetSchoolsListAsync();
+                viewModel.Nations = await _studentService.GetNationsListAsync();
+                viewModel.Sections = await _studentService.GetSectionsListAsync();
+                viewModel.Areas = await _studentService.GetAreasListAsync();
+                viewModel.StudentStatuses = await _studentService.GetStudentStatusesListAsync();
+                viewModel.TransferTypes = await _studentService.GetTransferTypesListAsync();
+                viewModel.Vehicles = await _studentService.GetVehiclesListAsync();
+                viewModel.Discounts = await _studentService.GetDiscountsListAsync();
+                viewModel.Genders = await _studentService.GetGendersListAsync();
+
+                return View(viewModel);
             }
         }
 
@@ -121,15 +209,16 @@ namespace SchoolManagement.Controllers
             try
             {
                 await _studentService.DeleteAsync(id);
-
-                TempData["SuccessMessage"] = "تم حذف الطالب بنجاح!";
+                TempData["SuccessMessage"] = "✅ تم حذف الطالب بنجاح!";
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"حدث خطأ أثناء الحذف: {ex.Message}";
+                TempData["ErrorMessage"] = $"❌ حدث خطأ أثناء الحذف: {ex.Message}";
             }
 
             return RedirectToAction(nameof(Index));
         }
-    } 
+
+
+    }
 }

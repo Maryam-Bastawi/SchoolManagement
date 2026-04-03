@@ -33,8 +33,8 @@ namespace SchoolManagement.Application.Services
                     Id = x.Id,
                     ClassNm = x.ClassNm,
                     ClassNmEn = x.ClassNmEn,
-                    GradeId = x.GradeId,
-                    GradeName = grades.FirstOrDefault(g => g.Id == x.GradeId)?.GradesNm
+                    GradeId = x.GradesId,
+                    GradeName = grades.FirstOrDefault(g => g.Id == x.GradesId)?.GradesNm
                 }).ToList();
         }
 
@@ -50,8 +50,8 @@ namespace SchoolManagement.Application.Services
                 Id = entity.Id,
                 ClassNm = entity.ClassNm,
                 ClassNmEn = entity.ClassNmEn,
-                GradeId = entity.GradeId,
-                GradeName = grades.FirstOrDefault(g => g.Id == entity.GradeId)?.GradesNm
+                GradeId = entity.GradesId,
+                GradeName = grades.FirstOrDefault(g => g.Id == entity.GradesId)?.GradesNm
             };
         }
 
@@ -64,7 +64,7 @@ namespace SchoolManagement.Application.Services
             {
                 ClassNm = dto.ClassNm.Trim(),
                 ClassNmEn = dto.ClassNmEn.Trim(),
-                GradeId = dto.GradeId
+                GradesId = dto.GradeId
             };
 
             await ClassRepo.AddAsync(entity);
@@ -83,7 +83,7 @@ namespace SchoolManagement.Application.Services
 
             entity.ClassNm = dto.ClassNm.Trim();
             entity.ClassNmEn = dto.ClassNmEn.Trim();
-            entity.GradeId = dto.GradeId;
+            entity.GradesId = dto.GradeId;
 
             ClassRepo.Update(entity);
             await _unitOfWork.CompleteAsync();

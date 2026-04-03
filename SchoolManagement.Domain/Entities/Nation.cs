@@ -12,4 +12,5 @@ namespace SchoolManagement.Domain.Entities
         public string? NationNm { get; set; }
         public string? NationNmE { get; set; }
     }
-}
+} 
+
