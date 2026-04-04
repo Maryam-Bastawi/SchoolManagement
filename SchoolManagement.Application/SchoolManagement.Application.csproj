@@ -15,4 +15,8 @@
     <PackageReference Include="Devon4Net.Infrastructure.FluentValidation" Version="8.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
+  </ItemGroup>
+
 </Project>
