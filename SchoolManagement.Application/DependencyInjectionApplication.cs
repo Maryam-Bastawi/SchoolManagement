@@ -39,7 +39,7 @@ namespace SchoolManagement.Application
             services.AddScoped<ITransLineService, TransLineService>();
             services.AddScoped<IVatService, VatService>();
             services.AddScoped<IClassService, ClassService>();
-
+            services.AddScoped<PaginationService>();
             return services;
         }
     }

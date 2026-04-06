@@ -1,4 +1,5 @@
-﻿@model SchoolManagement.Application.DTOs.Student.CreateStudentDto
+﻿
+@model SchoolManagement.Application.DTOs.Student.CreateStudentDto
 @{
     ViewData["Title"] = "تفاصيل الطالب";
     Layout = "_Layout";
@@ -691,13 +692,12 @@
                 </div>
             }
 
-            <!-- أزرار التحكم -->
             <div class="button-group">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">
-                    <i class="fas fa-edit"></i> تعديل البيانات
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-edit">
+                    <i class="fas fa-edit"></i> تعديل بيانات الطالب
                 </a>
-                <a asp-action="Index" class="btn btn-back">
-                    <i class="fas fa-arrow-right"></i> العودة إلى القائمة
+                <a href="@Url.Action("Index", "Student")" class="btn btn-back">
+                    <i class="fas fa-arrow-right"></i> العودة للقائمة
                 </a>
             </div>
         </div>

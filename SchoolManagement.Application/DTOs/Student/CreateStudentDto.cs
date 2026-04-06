@@ -122,5 +122,7 @@ namespace SchoolManagement.Application.DTOs.Student
 
         [Display(Name = "تاريخ السحب")]
         public DateTime? WithdrawDate { get; set; }
+        public bool RemoveImage { get; set; } = false;
+
     }
 }

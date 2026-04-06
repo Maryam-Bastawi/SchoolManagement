@@ -1,4 +1,5 @@
 ﻿@using SchoolManagement.Application.DTOs.Areas
+@using SchoolManagement.Domain.Entities
 @model IEnumerable<GetAreaDto>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
@@ -7,6 +8,9 @@
     ViewData["Title"] = "إدارة المناطق";
     Layout = "_Layout";
     var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+    var pagination = ViewBag.Pagination as PaginationModel;
+    int currentPage = pagination?.CurrentPage ?? 1;
+    int pageSize = pagination?.PageSize ?? 10;
 }
 
 <style>
@@ -499,7 +503,7 @@
             <div class="stat-icon"><i class="fas fa-list"></i></div>
             <div class="stat-content">
                 <h3>إجمالي المناطق</h3>
-                <div class="stat-number">@Model?.Count()</div>
+                <div class="stat-number">@pagination?.TotalCount</div>
                 <small>مسجل</small>
             </div>
         </div>
@@ -509,7 +513,7 @@
     <div class="filters-card">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="بحث بالاسم أو الكود..." />
+            <input type="text" id="searchInput" placeholder="بحث بالاسم..." value="@pagination?.SearchTerm" />
         </div>
     </div>
 
@@ -529,37 +533,40 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Select((value, i) => new { i = i + 1, value }))
+                        @{
+                            int counter = pagination?.StartRecord ?? 1;
+                        }
+                        @foreach (var item in Model)
                         {
-                            <tr id="row-@item.value.Id">
-                                <td>@item.i</td>
-                                <td>@item.value.AreaNm</td>
-                                <td>@item.value.AreaNm_E</td>
-                                <td>@item.value.Resp</td>
-
+                            <tr id="row-@item.Id">
+                                <td>@counter</td>
+                                <td>@item.AreaNm</td>
+                                <td>@item.AreaNm_E</td>
+                                <td>@item.Resp</td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a asp-action="Details" asp-route-id="@item.value.Id" class="btn-action btn-view">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn-action btn-view">
                                             <i class="fas fa-eye"></i> عرض
                                         </a>
-
-                                        <a asp-action="Edit" asp-route-id="@item.value.Id" class="btn-action btn-edit">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action btn-edit">
                                             <i class="fas fa-edit"></i> تعديل
                                         </a>
-
-                                        <button onclick="confirmDelete(@item.value.Id,'@item.value.AreaNm',this)"
+                                        <button onclick="confirmDelete(@item.Id,'@item.AreaNm',this)"
                                                 class="btn-action btn-delete">
                                             <i class="fas fa-trash"></i> حذف
                                         </button>
                                     </div>
                                 </td>
-
                             </tr>
+                            counter++;
                         }
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- ====== Pagination Partial View ====== -->
+        @await Html.PartialAsync("_Pagination", pagination)
     }
     else
     {
@@ -583,26 +590,33 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         const antiForgeryToken = '@requestToken';
 
         $(document).ready(function () {
-
             setTimeout(() => $('.alert').fadeOut('slow'), 5000);
 
+            // البحث مع Pagination
+            let searchTimeout;
             $("#searchInput").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-
-                $("#areasTable tbody tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = $(this).val();
+                    const url = new URL(window.location.href);
+                    if (searchTerm) {
+                        url.searchParams.set('search', searchTerm);
+                        url.searchParams.set('page', 1);
+                    } else {
+                        url.searchParams.delete('search');
+                    }
+                    window.location.href = url.toString();
+                }, 500);
             });
-
         });
 
         function confirmDelete(id, name, buttonElement) {
-
             Swal.fire({
                 title: 'تأكيد الحذف',
                 text: `هل أنت متأكد من حذف المنطقة "${name}"؟`,
@@ -613,9 +627,7 @@
                 confirmButtonText: 'نعم، احذف',
                 cancelButtonText: 'إلغاء'
             }).then((result) => {
-
                 if (result.isConfirmed) {
-
                     const originalText = buttonElement.innerHTML;
                     buttonElement.innerHTML = '<span class="loading-spinner"></span> جاري الحذف...';
                     buttonElement.disabled = true;
@@ -624,15 +636,11 @@
                         url: '/Area/DeleteConfirmed/' + id,
                         type: 'POST',
                         headers: { 'RequestVerificationToken': antiForgeryToken },
-
                         success: function (response) {
-
                             if (response.success) {
-
                                 $(`#row-${id}`).fadeOut(500, function () {
                                     $(this).remove();
                                 });
-
                                 Swal.fire({
                                     title: 'تم الحذف!',
                                     text: response.message,
@@ -640,32 +648,27 @@
                                     timer: 2000,
                                     showConfirmButton: false
                                 });
-
+                                setTimeout(() => location.reload(), 2000);
                             } else {
-
                                 Swal.fire({
                                     title: 'خطأ!',
                                     text: response.message,
                                     icon: 'error'
                                 });
-
                                 buttonElement.innerHTML = originalText;
                                 buttonElement.disabled = false;
                             }
                         },
-
                         error: function () {
                             Swal.fire({
                                 title: 'خطأ!',
                                 text: 'حدث خطأ في الاتصال بالخادم',
                                 icon: 'error'
                             });
-
                             buttonElement.innerHTML = originalText;
                             buttonElement.disabled = false;
                         }
                     });
-
                 }
             });
         }

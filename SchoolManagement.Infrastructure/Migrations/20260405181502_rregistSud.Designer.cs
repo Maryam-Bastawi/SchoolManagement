@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolManagement.Infrastructure.Context;
 
@@ -11,9 +12,11 @@ using SchoolManagement.Infrastructure.Context;
 namespace SchoolManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405181502_rregistSud")]
+    partial class rregistSud
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -409,9 +412,6 @@ namespace SchoolManagement.Infrastructure.Migrations
                     b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StudyYearId")
-                        .HasColumnType("int");
-
                     b.Property<decimal?>("TotalPaid")
                         .HasColumnType("decimal(18,2)");
 
@@ -427,8 +427,6 @@ namespace SchoolManagement.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
-
-                    b.HasIndex("StudyYearId");
 
                     b.HasIndex("transCost_value_sem1Id");
 
@@ -934,10 +932,6 @@ namespace SchoolManagement.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("StudentId");
 
-                    b.HasOne("SchoolManagement.Domain.Entities.StudyYear", "StudyYear")
-                        .WithMany()
-                        .HasForeignKey("StudyYearId");
-
                     b.HasOne("SchoolManagement.Domain.Entities.TransCost", "transCost_value_sem1")
                         .WithMany()
                         .HasForeignKey("transCost_value_sem1Id");
@@ -947,8 +941,6 @@ namespace SchoolManagement.Infrastructure.Migrations
                         .HasForeignKey("transCost_value_sem2Id");
 
                     b.Navigation("Student");
-
-                    b.Navigation("StudyYear");
 
                     b.Navigation("transCost_value_sem1");
 

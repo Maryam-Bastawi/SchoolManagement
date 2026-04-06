@@ -39,5 +39,6 @@ namespace SchoolManagement.Infrastructure.Context
         public DbSet<Supervisor> supervisors { get; set; } 
         public DbSet<ApplicationUser> Users { get; set; } 
         public DbSet<IdentityRole> Roles { get; set; } 
+        public DbSet<RegistrationStudent> RegistrationStudents { get; set; } 
     }
 }

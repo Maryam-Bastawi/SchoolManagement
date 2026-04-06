@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Application.DTOs.Areas;
 using SchoolManagement.Application.DTOs.Schoool;
+using SchoolManagement.Application.Services;
 using SchoolManagement.Application.ServicesInterfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -9,19 +10,45 @@ namespace SchoolManagement.Controllers
     public class AreaController : Controller
     {
         private readonly IAreaService _areaService;
+        private readonly PaginationService _paginationService;
 
-        public AreaController(IAreaService areaService)
+        public AreaController(IAreaService areaService, PaginationService paginationService)
         {
             _areaService = areaService;
+            _paginationService = paginationService;
+
         }
 
         // GET: Area
-        public async Task<IActionResult> Index()
-        {
-            var areas = await _areaService.GetAllAsync(); // بيرجع List<GetAreaDto>
-            return View(areas);
-        }
 
+        public async Task<IActionResult> Index(string search, int page = 1, int pageSize = 10)
+        {
+            // جلب جميع المناطق من الخدمة
+            var areas = await _areaService.GetAllAsync();
+
+            // فلترة حسب البحث (إن وجد)
+            if (!string.IsNullOrEmpty(search))
+            {
+                areas = areas
+                    .Where(a => a.AreaNm != null && a.AreaNm.Contains(search, System.StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            // حساب العدد الإجمالي للعناصر بعد الفلترة
+            var totalCount = areas.Count;
+
+            // جلب البيانات الخاصة بالصفحة الحالية فقط (Pagination)
+            var pagedAreas = _paginationService.GetPagedData(areas, page, pageSize);
+
+            // إنشاء نموذج Pagination لعرضه في الـ View
+            var paginationModel = _paginationService.GetPaginationModel(page, totalCount, pageSize, "Index", search);
+
+            // تخزين الـ Pagination في ViewBag لاستخدامه في الـ View
+            ViewBag.Pagination = paginationModel;
+
+            // إرجاع البيانات للـ View
+            return View(pagedAreas);
+        }
         // GET: Area/Details/5
         public async Task<IActionResult> Details(int id)
         {
@@ -41,20 +68,21 @@ namespace SchoolManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateAreaDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
+            if (ModelState.IsValid)
+            {
+                await _areaService.CreateAsync(dto);
+                TempData["Success"] = "تم إضافة المنطقة بنجاح!";
 
-            try
-            {
-                var id = await _areaService.CreateAsync(dto); // بيرجع Id جاهز
-                TempData["SuccessMessage"] = $"✅ تم إضافة المنطقة بنجاح بالكود: {id}";
-                return RedirectToAction(nameof(Index));
+                // حساب الصفحة التي سيظهر فيها العنصر الجديد
+                var allAreas = await _areaService.GetAllAsync();
+                int pageSize = 10;
+                int newItemIndex = allAreas.Count();
+                int targetPage = (int)System.Math.Ceiling((double)newItemIndex / pageSize);
+
+                return RedirectToAction(nameof(Index), new { page = targetPage, pageSize = 10 });
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"حدث خطأ أثناء الإضافة: {ex.Message}");
-                return View(dto);
-            }
+
+            return View(dto);
         }
 
         // GET: Area/Edit/5
