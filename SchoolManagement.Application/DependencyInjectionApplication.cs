@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SchoolManagement.Application.Services;
+using SchoolManagement.Application.Services.Implementations;
+using SchoolManagement.Application.ServicesInterfaces;
+using SchoolManagement.Infrastructure;
+using SchoolManagement.Infrastructure.Interface;
+using SchoolManagement.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SchoolManagement.Application.ServicesInterfaces;
-using SchoolManagement.Infrastructure.Interface;
-using SchoolManagement.Infrastructure.Repositories;
-using SchoolManagement.Infrastructure;
 namespace SchoolManagement.Application
 {
 
@@ -39,6 +40,7 @@ namespace SchoolManagement.Application
             services.AddScoped<ITransLineService, TransLineService>();
             services.AddScoped<IVatService, VatService>();
             services.AddScoped<IClassService, ClassService>();
+            services.AddScoped<IRegistrationStudentService, RegistrationStudentService>();
             services.AddScoped<PaginationService>();
             return services;
         }

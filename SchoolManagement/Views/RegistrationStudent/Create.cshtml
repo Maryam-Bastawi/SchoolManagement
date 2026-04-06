@@ -1,0 +1,590 @@
+﻿@model SchoolManagement.Application.DTOs.RegistrationStudent.RegistrationCreateVM
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "تسجيل طالب";
+    Layout = "_Layout";
+}
+
+<style>
+    .index-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 30px 0;
+        padding: 0 40px;
+    }
+
+    .header-card {
+        background: linear-gradient(135deg, #0d6e6e 0%, #0a5a5a 100%);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .header-title h1 i {
+            color: #b68b40;
+            font-size: 2.2rem;
+        }
+
+    .header-title p {
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    /* كروت البيانات */
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+        margin-bottom: 25px;
+    }
+
+    .card-header-custom {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 2px solid #0d6e6e;
+    }
+
+        .card-header-custom h5 {
+            margin: 0;
+            color: #0d6e6e;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    .card-body-custom {
+        padding: 20px;
+    }
+
+    /* بطاقة معلومات الطالب */
+    .info-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 12px;
+        border-right: 3px solid #0d6e6e;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: #0d6e6e;
+        font-weight: 600;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* الحقول */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 0.9rem;
+    }
+
+        .form-label i {
+            color: #0d6e6e;
+            margin-left: 8px;
+        }
+
+    .form-control, .input-group-text {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 8px 12px;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            border-color: #0d6e6e;
+            box-shadow: 0 0 0 3px rgba(13, 110, 110, 0.1);
+        }
+
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+        }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        color: #0d6e6e;
+        font-weight: 600;
+    }
+
+    /* صفوف الحقول */
+    .row-fields {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .field-half {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .field-full {
+        width: 100%;
+    }
+
+    /* أزرار */
+    .btn-save {
+        background: linear-gradient(135deg, #0d6e6e 0%, #0a5a5a 100%);
+        color: white;
+        padding: 12px 35px;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 110, 0.3);
+            color: white;
+        }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        padding: 12px 35px;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            color: white;
+        }
+
+    /* التنبيهات */
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        border-right: 4px solid #721c24;
+        color: #721c24;
+    }
+
+    hr {
+        margin: 20px 0;
+        border-color: #e9ecef;
+    }
+
+    .total-amount {
+        font-size: 1.1rem;
+        font-weight: bold;
+        background: #e8f5e9;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .index-container {
+            padding: 0 15px;
+        }
+
+        .row-fields {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+
+<div class="index-container">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    <!-- Header -->
+    <div class="header-card">
+        <div class="header-title">
+            <h1>
+                <i class="fas fa-user-check"></i>
+                تسجيل طالب
+            </h1>
+            <p>إتمام عملية تسجيل الطالب في العام الدراسي</p>
+        </div>
+    </div>
+
+    <form asp-action="Create" asp-controller="RegistrationStudent" method="post" id="registrationForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="StudentId" />
+        <input type="hidden" asp-for="StudyYearId" />
+
+        <!-- 1. بيانات الطالب -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <h5>
+                    <i class="fas fa-user-circle"></i> بيانات الطالب
+                </h5>
+            </div>
+            <div class="card-body-custom">
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">الاسم الكامل</div>
+                            <div class="info-value">@Model.StudentFullName</div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">المدرسة</div>
+                            <div class="info-value">@Model.SchoolName</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">المرحلة</div>
+                            <div class="info-value">@Model.StageName</div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">الصف</div>
+                            <div class="info-value">@Model.GradeName</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">الفصل</div>
+                            <div class="info-value">@Model.ClassName</div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">حالة الطالب</div>
+                            <div class="info-value">@Model.StudentStatusName</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">العام الدراسي</div>
+                            <div class="info-value">@Model.StudyYearName</div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">نوع الانتقال</div>
+                            <div class="info-value">@Model.TransferTypeName</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">الحافلة</div>
+                            <div class="info-value">@Model.VehicleName</div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="info-card">
+                            <div class="info-label">نوع الخصم الأساسي</div>
+                            <div class="info-value">@Model.DiscountTypeName</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. الرسوم والمصروفات -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <h5>
+                    <i class="fas fa-money-bill-wave"></i> الرسوم والمصروفات
+                </h5>
+            </div>
+            <div class="card-body-custom">
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">رسوم دراسية ترم 1</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="FirstSemesterFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">رسوم دراسية ترم 2</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="SecondSemesterFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">قيمة انتقال ترم اول</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="FirstSemesterTransferFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">قيمة انتقال ترم تانى</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="SecondSemesterTransferFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">رسوم التسجيل</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="RegistrationFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">كتب دراسية</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="BooksFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-full">
+                        <div class="form-group">
+                            <label class="form-label">أخرى</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="OtherFees" class="form-control fee-input" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. الخصم والإجماليات -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <h5>
+                    <i class="fas fa-tag"></i> الخصم والإجماليات
+                </h5>
+            </div>
+            <div class="card-body-custom">
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">نوع الخصم</label>
+                            <select asp-for="DiscountTypeId" asp-items="Model.DiscountTypesList" class="form-control">
+                                <option value="">-- اختر --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">قيمة الخصم</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="DiscountValue" class="form-control" id="discountValue" type="number" step="0.01" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">نسبة الخصم %</label>
+                            <input asp-for="DiscountPercentage" class="form-control" id="discountPercentage" type="number" step="0.01" value="0" />
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">مركز التكلفة</label>
+                            <select asp-for="CostCenterId" asp-items="Model.CostCentersList" class="form-control">
+                                <option value="">-- اختر --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">إجمالي المبلغ</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ج.م</span>
+                                <input asp-for="TotalAmount" class="form-control total-amount" id="totalAmount" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label text-success">المبلغ بعد الخصم</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-success text-white">ج.م</span>
+                                <input asp-for="AmountAfterDiscount" class="form-control total-amount" id="amountAfterDiscount" readonly style="color:#0d6e6e;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. ملاحظات -->
+        <div class="form-card">
+            <div class="card-header-custom">
+                <h5>
+                    <i class="fas fa-sticky-note"></i> ملاحظات
+                </h5>
+            </div>
+            <div class="card-body-custom">
+                <div class="row-fields">
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">ملاحظات 1</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="أدخل ملاحظات إضافية..."></textarea>
+                        </div>
+                    </div>
+                    <div class="field-half">
+                        <div class="form-group">
+                            <label class="form-label">ملاحظات 2</label>
+                            <textarea asp-for="Notes2" class="form-control" rows="2" placeholder="أدخل ملاحظات إضافية..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. أزرار الإجراءات -->
+        <div class="form-card">
+            <div class="card-body-custom text-center">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> حفظ التسجيل
+                </button>
+                <a asp-action="Index" class="btn-cancel">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // إخفاء التنبيه بعد 5 ثواني
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // حساب الإجمالي عند تغيير أي حقل
+            $('.fee-input').on('input', calculateTotal);
+            $('#discountValue, #discountPercentage').on('input', calculateTotal);
+
+            // منع استخدام الخصم والنسبة معاً
+            $('#discountValue').on('input', function() {
+                if ($(this).val() != '' && $(this).val() != 0) {
+                    $('#discountPercentage').val('');
+                }
+            });
+
+            $('#discountPercentage').on('input', function() {
+                if ($(this).val() != '' && $(this).val() != 0) {
+                    $('#discountValue').val('');
+                }
+            });
+
+            // حساب أولي
+            calculateTotal();
+        });
+
+        function calculateTotal() {
+            let total = 0;
+            $('.fee-input').each(function() {
+                let val = parseFloat($(this).val()) || 0;
+                total += val;
+            });
+
+            $('#totalAmount').val(total.toFixed(2));
+
+            let discountValue = parseFloat($('#discountValue').val()) || 0;
+            let discountPercentage = parseFloat($('#discountPercentage').val()) || 0;
+            let amountAfterDiscount = total;
+
+            if (discountValue > 0) {
+                amountAfterDiscount = total - discountValue;
+            } else if (discountPercentage > 0) {
+                amountAfterDiscount = total - (total * discountPercentage / 100);
+            } else {
+                amountAfterDiscount = total;
+            }
+
+            $('#amountAfterDiscount').val(amountAfterDiscount.toFixed(2));
+        }
+    </script>
+}

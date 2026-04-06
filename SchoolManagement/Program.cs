@@ -32,8 +32,8 @@ using SchoolManagement.Infrastructure.Context;
 
     app.UseAuthorization();
 
-    app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Student}/{action=Index}/{id?}");
+app.MapControllerRoute(
+ name: "default",
+ pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    app.Run();
+app.Run();

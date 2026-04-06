@@ -10,62 +10,52 @@ namespace SchoolManagement.Domain.Entities
 {
     public class RegistrationStudent
     {
-        // بيانات التسجيل الأساسية
+        [Key]
         public int Id { get; set; }
-        [Display(Name = "التاريخ الهجري")]
-        public string? HijriDate { get; set; }
 
-        [Display(Name = "التاريخ الميلادي")]
-        public DateTime? GregorianDate { get; set; }
-
-        [Required(ErrorMessage = "الطالب مطلوب")]
-        [Display(Name = "الطالب")]
+        // العلاقة مع الطالب
         public int StudentId { get; set; }
+        [ForeignKey("StudentId")]
+        public Student? Student { get; set; }
 
-        [Display(Name = "ملاحظات")]
-        public string? Notes { get; set; }
+        // العلاقة مع العام الدراسي
+        public int StudyYearId { get; set; }
+        [ForeignKey("StudyYearId")]
+        public StudyYear? StudyYear { get; set; }
 
-        [Display(Name = "ملاحظات إضافية")]
-        public string? Notes2 { get; set; }
+        // الرسوم الدراسية
+        public decimal? FirstSemesterFees { get; set; }      // رسوم دراسية ترم 1
+        public decimal? SecondSemesterFees { get; set; }     // رسوم دراسية ترم 2
+        public decimal? FirstSemesterTransferFees { get; set; }  // قيمة انتقال ترم اول
+        public decimal? SecondSemesterTransferFees { get; set; } // قيمة انتقال ترم تانى
+        public decimal? RegistrationFees { get; set; }       // رسوم التسجيل
+        public decimal? BooksFees { get; set; }              // كتب دراسية
+        public decimal? OtherFees { get; set; }              // اخري
 
-        [Display(Name = "الفصل الدراسي الأول")]
-        public bool FirstTerm { get; set; }
+        // الخصم (من جدول الطالب - يتم جلبها وجلبها هنا للتسجيل)
+        public int? DiscountTypeId { get; set; }             // نوع الخصم
+        public decimal? DiscountValue { get; set; }          // قيمة الخصم
+        public decimal? DiscountPercentage { get; set; }     // نسبة الخصم
 
-        [Display(Name = "الفصل الدراسي الثاني")]
-        public bool SecondTerm { get; set; }
+        // المبالغ
+        public decimal? TotalAmount { get; set; }            // اجمالى المبلغ قبل الخصم
+        public decimal? AmountAfterDiscount { get; set; }    // المبلغ بعد الخصم
 
-        [Display(Name = "رسوم الدراسة الترم الأول")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? FirstTermStudyFees { get; set; }
+        // نوع الانتقال والحافلة (من جدول الطالب)
+        public int? TransferTypeId { get; set; }
+        public int? VehicleId { get; set; }
 
-        [Display(Name = "رسوم الدراسة الترم الثاني")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? SecondTermStudyFees { get; set; }
+        // الملاحظات
+        public string? Notes { get; set; }                   // ملاحظات 1
+        public string? Notes2 { get; set; }                  // ملاحظات 2
 
-        [Display(Name = "قيمة الانتقال ترم أول")]
-        public int? transCost_value_sem1Id { get; set; }
-
-        [Display(Name = "قيمة الانتقال ترم ثاني")]
-        public int? transCost_value_sem2Id { get; set; }
-
-        [Display(Name = "العام الدراسي")]
-        public int? StudyYearId { get; set; }
-
-        [Display(Name = "رسوم التسجيل")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? FirstTermRegistrationFees { get; set; }
-
-        [Display(Name = "رسوم الكتب")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? FirstTermBooksFees { get; set; }
-
-        [Display(Name = "رسوم أخرى")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? other { get; set; }
-
-        [Display(Name = "إجمالي بعد الخصم")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? TotalPaid { get; set; }
+        // بيانات إضافية للتسجيل
+        public DateTime? RegistrationDate { get; set; }      // تاريخ التسجيل
+        public int? CostCenterId { get; set; }               // مركز التكلفة
+        public bool IsPaid { get; set; }                     // هل تم الدفع؟
+        public DateTime? CreatedAt { get; set; }             // تاريخ الإنشاء
+        public int? CreatedBy { get; set; }                  // من قام بالتسجيل
 
     }
+
 }
